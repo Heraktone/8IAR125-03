@@ -12,6 +12,7 @@
 
 # Build results
 8IAR125-03/[Dd]ebug/
+8IAR125-03/[Dd]ebug[Ll]og.*
 [Dd]ebugPublic/
 [Rr]elease/
 [Rr]eleases/
