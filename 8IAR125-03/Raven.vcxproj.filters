@@ -609,7 +609,9 @@
     <ClInclude Include="..\Common\misc\WindowUtils.h">
       <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="Raven_Team.h" />
+    <ClInclude Include="Raven_Team.h">
+      <Filter>Game</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Params.lua">
