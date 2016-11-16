@@ -26,7 +26,8 @@
 #include "goals/Goal_Think.h"
 #include "goals/Raven_Goal_Types.h"
 
-
+// PARAMS
+int nbTeams = 3; // Nb of teams (1 <= nbTeams <= 5)
 
 //uncomment to write object creation/deletion to debug console
 //#define  LOG_CREATIONAL_STUFF
@@ -80,6 +81,13 @@ void Raven_Game::Clear()
     delete *it;
   }
 
+  //delete the teams
+  std::list<Raven_Team*>::iterator it2 = m_Teams.begin();
+  for (it2; it2 != m_Teams.end(); ++it2)
+  {
+	  delete *it2;
+  }
+
   //delete any active projectiles
   std::list<Raven_Projectile*>::iterator curW = m_Projectiles.begin();
   for (curW; curW != m_Projectiles.end(); ++curW)
@@ -94,6 +102,7 @@ void Raven_Game::Clear()
   //clear the containers
   m_Projectiles.clear();
   m_Bots.clear();
+  m_Teams.clear();
 
   m_pSelectedBot = NULL;
 
@@ -174,6 +183,13 @@ void Raven_Game::Update()
     }  
   } 
 
+  // update the teams
+  std::list<Raven_Team*>::iterator it = m_Teams.begin();
+  for (it; it != m_Teams.end(); ++it)
+  {
+	  (*it)->Update();
+  }
+
   //update the triggers
   m_pMap->UpdateTriggerSystem(m_Bots);
 
@@ -246,26 +262,40 @@ bool Raven_Game::AttemptToAddBot(Raven_Bot* pBot)
 //-----------------------------------------------------------------------------
 void Raven_Game::AddBots(unsigned int NumBotsToAdd)
 { 
-  while (NumBotsToAdd--)
-  {
-    //create a bot. (its position is irrelevant at this point because it will
-    //not be rendered until it is spawned)
-    Raven_Bot* rb = new Raven_Bot(this, Vector2D());
+	while (NumBotsToAdd--)
+	{
+		//create a bot. (its position is irrelevant at this point because it will
+		//not be rendered until it is spawned)
+		Raven_Bot* rb = new Raven_Bot(this, Vector2D());
 
-    //switch the default steering behaviors on
-    rb->GetSteering()->WallAvoidanceOn();
-    rb->GetSteering()->SeparationOn();
+		//switch the default steering behaviors on
+		rb->GetSteering()->WallAvoidanceOn();
+		rb->GetSteering()->SeparationOn();
 
-    m_Bots.push_back(rb);
+		//Choose the team of the bot
+		int minNbMembers = -1;
+		Raven_Team* team = 0;
+		std::list<Raven_Team*>::const_iterator curTeam = m_Teams.begin();
+		for (curTeam; curTeam != m_Teams.end(); curTeam++)
+		{
+			Raven_Team* t = *curTeam;
+			if (t->GetNbMembers() <= minNbMembers || minNbMembers == -1)
+			{
+				minNbMembers = t->GetNbMembers();
+				team = t;
+			}
+		}
+		team->AddMember(rb);
+		m_Bots.push_back(rb);
 
-    //register the bot with the entity manager
-    EntityMgr->RegisterEntity(rb);
+		//register the bot with the entity manager
+		EntityMgr->RegisterEntity(rb);
 
     
-#ifdef LOG_CREATIONAL_STUFF
-  debug_con << "Adding bot with ID " << ttos(rb->ID()) << "";
-#endif
-  }
+		#ifdef LOG_CREATIONAL_STUFF
+		debug_con << "Adding bot with ID " << ttos(rb->ID()) << "";
+		#endif
+	}
 }
 
 //---------------------------- NotifyAllBotsOfRemoval -------------------------
@@ -392,6 +422,10 @@ bool Raven_Game::LoadMap(const std::string& filename)
   //make sure the entity manager is reset
   EntityMgr->Reset();
 
+  // Create the teams
+  for (int t = 0; t < nbTeams; t++) {
+	  m_Teams.push_back(new Raven_Team(t));
+  }
 
   //load the new map data
   if (m_pMap->LoadMap(filename))

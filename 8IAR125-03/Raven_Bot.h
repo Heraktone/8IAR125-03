@@ -25,6 +25,7 @@ class Regulator;
 class Raven_Weapon;
 struct Telegram;
 class Raven_Bot;
+class Raven_Team;
 class Goal_Think;
 class Raven_WeaponSystem;
 class Raven_SensoryMemory;
@@ -42,6 +43,9 @@ private:
 
   //alive, dead or spawning?
   Status                             m_Status;
+
+  // The team of the bot
+  Raven_Team* team;
 
   //a pointer to the world data
   Raven_Game*                        m_pWorld;
@@ -127,6 +131,9 @@ public:
   
   Raven_Bot(Raven_Game* world, Vector2D pos);
   virtual ~Raven_Bot();
+
+  Raven_Team* GetTeam() { return team; }
+  void SetTeam(Raven_Team* team) { this->team = team; };
 
   //the usual suspects
   void         Render();
