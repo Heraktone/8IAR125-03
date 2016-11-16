@@ -26,9 +26,6 @@
 #include "goals/Goal_Think.h"
 #include "goals/Raven_Goal_Types.h"
 
-// PARAMS
-int nbTeams = 3; // Nb of teams (1 <= nbTeams <= 5)
-
 //uncomment to write object creation/deletion to debug console
 //#define  LOG_CREATIONAL_STUFF
 
@@ -222,36 +219,29 @@ bool Raven_Game::AttemptToAddBot(Raven_Bot* pBot)
     ErrorBox("Map has no spawn points!"); return false;
   }
 
-  //we'll make the same number of attempts to spawn a bot this update as
-  //there are spawn points
-  int attempts = m_pMap->GetSpawnPoints().size();
+	//select the team spawn point
+	Vector2D pos = m_pMap->GetSpawnPoints().at(pBot->GetTeam()->GetId());
 
-  while (--attempts >= 0)
-  { 
-    //select a random spawn point
-    Vector2D pos = m_pMap->GetRandomSpawnPoint();
+	//check to see if it's occupied
+	std::list<Raven_Bot*>::const_iterator curBot = m_Bots.begin();
 
-    //check to see if it's occupied
-    std::list<Raven_Bot*>::const_iterator curBot = m_Bots.begin();
+	bool bAvailable = true;
 
-    bool bAvailable = true;
+	for (curBot; curBot != m_Bots.end(); ++curBot)
+	{
+		//if the spawn point is unoccupied spawn a bot
+		if (Vec2DDistance(pos, (*curBot)->Pos()) < (*curBot)->BRadius())
+		{
+			bAvailable = false;
+		}
+	}
 
-    for (curBot; curBot != m_Bots.end(); ++curBot)
-    {
-      //if the spawn point is unoccupied spawn a bot
-      if (Vec2DDistance(pos, (*curBot)->Pos()) < (*curBot)->BRadius())
-      {
-        bAvailable = false;
-      }
-    }
+	if (bAvailable)
+	{  
+		pBot->Spawn(pos);
 
-    if (bAvailable)
-    {  
-      pBot->Spawn(pos);
-
-      return true;   
-    }
-  }
+		return true;   
+	}
 
   return false;
 }
@@ -422,14 +412,16 @@ bool Raven_Game::LoadMap(const std::string& filename)
   //make sure the entity manager is reset
   EntityMgr->Reset();
 
-  // Create the teams
-  for (int t = 0; t < nbTeams; t++) {
-	  m_Teams.push_back(new Raven_Team(t));
-  }
-
   //load the new map data
   if (m_pMap->LoadMap(filename))
   { 
+	int nbTeams = m_pMap->GetSpawnPoints().size();
+
+	// Create the teams
+	for (int t = 0; t < nbTeams; t++) {
+		m_Teams.push_back(new Raven_Team(t));
+	}
+
     AddBots(script->GetInt("NumBots"));
   
     return true;

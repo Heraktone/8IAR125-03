@@ -499,26 +499,7 @@ void Raven_Bot::Render()
   //draw the head
   if (team)
   {
-	  if (team->GetColor() == Raven_Team::Red)
-	  {
-		  gdi->RedBrush();
-	  }
-	  else if (team->GetColor() == Raven_Team::Blue)
-	  {
-		  gdi->BlueBrush();
-	  }
-	  else if (team->GetColor() == Raven_Team::Green)
-	  {
-		  gdi->GreenBrush();
-	  }
-	  else if (team->GetColor() == Raven_Team::Yellow)
-	  {
-		  gdi->YellowBrush();
-	  }
-	  else
-	  {
-		  gdi->GreyBrush();
-	  }
+	Raven_Team::BrushColor(team->GetId());
   }
   else {
 	gdi->BrownBrush();

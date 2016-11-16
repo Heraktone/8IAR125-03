@@ -3,6 +3,7 @@
 #include "misc/Cgdi.h"
 #include "Graph/HandyGraphFunctions.h"
 #include "Raven_Door.h"
+#include "Raven_Team.h"
 #include "game/EntityManager.h"
 #include "constants.h"
 #include "lua/Raven_Scriptor.h"
@@ -404,10 +405,12 @@ void Raven_Map::Render()
   }
 
   std::vector<Vector2D>::const_iterator curSp = m_SpawnPoints.begin();
-  for (curSp; curSp != m_SpawnPoints.end(); ++curSp)
+  int t = 0;
+  for (curSp; curSp != m_SpawnPoints.end(); ++curSp, t++)
   {
     gdi->GreyBrush();
-    gdi->GreyPen();
+	Raven_Team::PenColor(t);
+
     gdi->Circle(*curSp, 7);
   }
 }
