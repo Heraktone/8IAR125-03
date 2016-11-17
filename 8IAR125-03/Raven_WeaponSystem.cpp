@@ -84,9 +84,9 @@ void Raven_WeaponSystem::InitializeFuzzyModuleWeaponSystem()
 	FzSet& Agent_Fast = AgentVelocity.AddTriangularSet("Agent_Fast", 10, 15, 1000);
 
 	FuzzyVariable& AgentVisibility = m_FuzzyModule.CreateFLV("AgentVisibility");
-	FzSet& Visible_Short = AgentVelocity.AddRightShoulderSet("Visible_Short", 0, 2 + m_dReactionTime, 5 + m_dReactionTime);
-	FzSet& Visible_Medium = AgentVelocity.AddTriangularSet("Visible_Medium", m_dReactionTime + 2, m_dReactionTime + 5, m_dReactionTime + 6);
-	FzSet& Visible_Long = AgentVelocity.AddTriangularSet("Visible_Long", m_dReactionTime + 5, m_dReactionTime + 6, m_dReactionTime + 10000);
+	FzSet& Visible_Short = AgentVisibility.AddRightShoulderSet("Visible_Short", 0, m_dReactionTime + 2, m_dReactionTime + 5);
+	FzSet& Visible_Medium = AgentVisibility.AddTriangularSet("Visible_Medium", m_dReactionTime + 2, m_dReactionTime + 5, m_dReactionTime + 6);
+	FzSet& Visible_Long = AgentVisibility.AddTriangularSet("Visible_Long", m_dReactionTime + 5, m_dReactionTime + 6, m_dReactionTime + 100);
 
 
 	m_FuzzyModule.AddRule(FzAND(Target_Close, Agent_Slow, Visible_Short), Desirable);
