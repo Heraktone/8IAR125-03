@@ -38,10 +38,9 @@ Raven_Map::~Raven_Map()
 }
 
 // Add a dropped weapon trigger
-void Raven_Map::AddDroppedWeaponTrigger(Vector2D pos, unsigned int weapon, int ammo, int team) {
-	m_TriggerSystem.Register(new Trigger_DroppedWeapon(pos, weapon, ammo, team));
+void Raven_Map::AddDroppedWeaponTrigger(Vector2D pos, unsigned int weapon, int ammo, int team, Raven_Game* world) {
+	m_TriggerSystem.Register(new Trigger_DroppedWeapon(pos, weapon, ammo, team, world));
 }
-
 
 //---------------------------- Clear ------------------------------------------
 //

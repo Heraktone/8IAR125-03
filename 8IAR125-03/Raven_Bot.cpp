@@ -107,13 +107,18 @@ Raven_Bot::~Raven_Bot()
 // Called whenever the agent dies
 void Raven_Bot::DropWeapon() {
 	if (m_pWorld->TeamsActivated()) {
+		// Choose a position to drop the current weapon
+		double theta = 2 * RandFloat() * pi;
+		int radius = RandInt(20, 30);
+		Vector2D offset(radius * cos(theta), radius * sin(theta));
+		Vector2D pos = m_pWorld->GetMap()->GetSpawnPoints().at(team->GetId()) + offset;
+
 		// Drop the current weapon
 		Raven_Weapon* w = m_pWeaponSys->GetCurrentWeapon();
-		Vector2D pos = m_pWorld->GetMap()->GetSpawnPoints().at(team->GetId());
-		m_pWorld->GetMap()->AddDroppedWeaponTrigger(pos, w->GetType(), w->NumRoundsRemaining(), team->GetId());
+		m_pWorld->GetMap()->AddDroppedWeaponTrigger(pos, w->GetType(), w->NumRoundsRemaining(), team->GetId(), m_pWorld);
 
 		// Alert the team
-
+		team->AddDroppedWeapon(pos);
 	}
 }
 

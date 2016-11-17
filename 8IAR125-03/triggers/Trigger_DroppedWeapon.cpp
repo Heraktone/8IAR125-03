@@ -6,11 +6,12 @@
 #include "../Raven_WeaponSystem.h"
 
 // Constructor
-Trigger_DroppedWeapon::Trigger_DroppedWeapon(Vector2D pos, unsigned int weapon, int ammo, int team) :
+Trigger_DroppedWeapon::Trigger_DroppedWeapon(Vector2D pos, unsigned int weapon, int ammo, int team, Raven_Game* world) :
 	Trigger<Raven_Bot>(BaseGameEntity::GetNextValidID()),
 	m_WeaponType(weapon),
 	m_Ammo(ammo),
-	m_Team(team)
+	m_Team(team),
+	m_pWorld(world)
 {
 	SetPos(pos);
 	AddCircularTriggerRegion(pos, 5);
@@ -33,14 +34,22 @@ Trigger_DroppedWeapon::Trigger_DroppedWeapon(Vector2D pos, unsigned int weapon, 
 }
 
 // Update
-void Trigger_DroppedWeapon::Update() { }
+void Trigger_DroppedWeapon::Update() {
+	if (!m_pWorld->TeamsActivated())
+	{
+		SetToBeRemovedFromGame();
+	}
+}
 
 // If the item is picked, then erase it
 void Trigger_DroppedWeapon::Try(Raven_Bot* bot) {
-	if (this->isActive() && bot->GetTeam()->GetId() == m_Team && this->isTouchingTrigger(bot->Pos(), bot->BRadius()))
-	{
-		bot->GetWeaponSys()->AddWeapon(EntityType());
-		SetToBeRemovedFromGame();
+	if (m_pWorld->TeamsActivated()) {
+		if (this->isActive() && bot->GetTeam()->GetId() == m_Team && this->isTouchingTrigger(bot->Pos(), bot->BRadius()))
+		{
+			bot->GetWeaponSys()->AddWeapon(EntityType());
+			bot->GetTeam()->RemoveDroppedWeapon(m_vPosition);
+			SetToBeRemovedFromGame();
+		}
 	}
 }
 

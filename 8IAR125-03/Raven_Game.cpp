@@ -78,7 +78,7 @@ void Raven_Game::ActivateTeams(bool activate) {
 		std::list<Raven_Bot*>::iterator it = m_Bots.begin();
 		for (it; it != m_Bots.end(); ++it)
 		{
-			(*it)->SetTeam(0);
+			(*it)->GetTeam()->RemoveMember(*it);
 		}
 	}
 }
@@ -489,7 +489,7 @@ bool Raven_Game::LoadMap(const std::string& filename)
 
 	// Create the teams
 	for (int t = 0; t < nbTeams; t++) {
-		m_Teams.push_back(new Raven_Team(t));
+		m_Teams.push_back(new Raven_Team(t, this));
 	}
 
     AddBots(script->GetInt("NumBots"));

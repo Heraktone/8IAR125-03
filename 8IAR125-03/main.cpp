@@ -419,7 +419,7 @@ LRESULT CALLBACK WindowProc (HWND   hwnd,
 
          // kill the application, this sends a WM_QUIT message  
 				 PostQuitMessage (0);
-				 return 0;
+				 exit (0);
 			 }
 
        break;
