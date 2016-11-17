@@ -383,7 +383,7 @@ Vector2D Raven_Map::GetRandomNodeLocation()const
 
 //--------------------------- Render ------------------------------------------
 //-----------------------------------------------------------------------------
-void Raven_Map::Render()
+void Raven_Map::Render(bool teamActive)
 {
   //render the navgraph
   if (UserOptions->m_bShowGraph)
@@ -414,7 +414,14 @@ void Raven_Map::Render()
   for (curSp; curSp != m_SpawnPoints.end(); ++curSp, t++)
   {
     gdi->GreyBrush();
-	Raven_Team::PenColor(t);
+	if (teamActive)
+	{
+		Raven_Team::PenColor(t);
+	}
+	else
+	{
+		gdi->BlackPen();
+	}
 
     gdi->Circle(*curSp, 7);
   }

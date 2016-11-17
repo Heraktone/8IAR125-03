@@ -37,7 +37,8 @@ Raven_Game::Raven_Game():m_pSelectedBot(NULL),
                          m_bRemoveABot(false),
                          m_pMap(NULL),
                          m_pPathManager(NULL),
-                         m_pGraveMarkers(NULL)
+                         m_pGraveMarkers(NULL),
+						 teamActive(true)
 {
   //load in the default map
   LoadMap(script->GetString("StartMap"));
@@ -53,6 +54,33 @@ Raven_Game::~Raven_Game()
   delete m_pMap;
   
   delete m_pGraveMarkers;
+}
+
+void Raven_Game::ActivateTeams(bool activate) {
+	if (activate)
+	{
+		teamActive = true;
+		std::list<Raven_Bot*>::iterator it = m_Bots.begin();
+		std::list<Raven_Team*>::iterator itTeam = m_Teams.begin();
+		for (it; it != m_Bots.end(); ++it)
+		{
+			(*itTeam)->AddMember((*it));
+			itTeam++;
+			if (itTeam == m_Teams.end())
+			{
+				itTeam = m_Teams.begin();
+			}
+		}
+	}
+	else
+	{
+		teamActive = false;
+		std::list<Raven_Bot*>::iterator it = m_Bots.begin();
+		for (it; it != m_Bots.end(); ++it)
+		{
+			(*it)->SetTeam(0);
+		}
+	}
 }
 
 
@@ -111,81 +139,83 @@ void Raven_Game::Clear()
 //  calls the update function of each entity
 //-----------------------------------------------------------------------------
 void Raven_Game::Update()
-{ 
-  //don't update if the user has paused the game
-  if (m_bPaused) return;
+{
+	//don't update if the user has paused the game
+	if (m_bPaused) return;
 
-  m_pGraveMarkers->Update();
+	m_pGraveMarkers->Update();
 
-  //get any player keyboard input
-  GetPlayerInput();
-  
-  //update all the queued searches in the path manager
-  m_pPathManager->UpdateSearches();
+	//get any player keyboard input
+	GetPlayerInput();
 
-  //update any doors
-  std::vector<Raven_Door*>::iterator curDoor =m_pMap->GetDoors().begin();
-  for (curDoor; curDoor != m_pMap->GetDoors().end(); ++curDoor)
-  {
-    (*curDoor)->Update();
-  }
+	//update all the queued searches in the path manager
+	m_pPathManager->UpdateSearches();
 
-  //update any current projectiles
-  std::list<Raven_Projectile*>::iterator curW = m_Projectiles.begin();
-  while (curW != m_Projectiles.end())
-  {
-    //test for any dead projectiles and remove them if necessary
-    if (!(*curW)->isDead())
-    {
-      (*curW)->Update();
+	//update any doors
+	std::vector<Raven_Door*>::iterator curDoor = m_pMap->GetDoors().begin();
+	for (curDoor; curDoor != m_pMap->GetDoors().end(); ++curDoor)
+	{
+		(*curDoor)->Update();
+	}
 
-      ++curW;
-    }
-    else
-    {    
-      delete *curW;
+	//update any current projectiles
+	std::list<Raven_Projectile*>::iterator curW = m_Projectiles.begin();
+	while (curW != m_Projectiles.end())
+	{
+		//test for any dead projectiles and remove them if necessary
+		if (!(*curW)->isDead())
+		{
+			(*curW)->Update();
 
-      curW = m_Projectiles.erase(curW);
-    }   
-  }
-  
-  //update the bots
-  bool bSpawnPossible = true;
-  
-  std::list<Raven_Bot*>::iterator curBot = m_Bots.begin();
-  for (curBot; curBot != m_Bots.end(); ++curBot)
-  {
-    //if this bot's status is 'respawning' attempt to resurrect it from
-    //an unoccupied spawn point
-    if ((*curBot)->isSpawning() && bSpawnPossible)
-    {
-      bSpawnPossible = AttemptToAddBot(*curBot);
-    }
-    
-    //if this bot's status is 'dead' add a grave at its current location 
-    //then change its status to 'respawning'
-    else if ((*curBot)->isDead())
-    {
-      //create a grave
-      m_pGraveMarkers->AddGrave((*curBot)->Pos());
+			++curW;
+		}
+		else
+		{
+			delete *curW;
 
-      //change its status to spawning
-      (*curBot)->SetSpawning();
-    }
+			curW = m_Projectiles.erase(curW);
+		}
+	}
 
-    //if this bot is alive update it.
-    else if ( (*curBot)->isAlive())
-    {
-      (*curBot)->Update();
-    }  
-  } 
+	//update the bots
+	bool bSpawnPossible = true;
 
-  // update the teams
-  std::list<Raven_Team*>::iterator it = m_Teams.begin();
-  for (it; it != m_Teams.end(); ++it)
-  {
-	  (*it)->Update();
-  }
+	std::list<Raven_Bot*>::iterator curBot = m_Bots.begin();
+	for (curBot; curBot != m_Bots.end(); ++curBot)
+	{
+		//if this bot's status is 'respawning' attempt to resurrect it from
+		//an unoccupied spawn point
+		if ((*curBot)->isSpawning() && bSpawnPossible)
+		{
+			bSpawnPossible = AttemptToAddBot(*curBot);
+		}
+
+		//if this bot's status is 'dead' add a grave at its current location 
+		//then change its status to 'respawning'
+		else if ((*curBot)->isDead())
+		{
+			//create a grave
+			m_pGraveMarkers->AddGrave((*curBot)->Pos());
+
+			//change its status to spawning
+			(*curBot)->SetSpawning();
+		}
+
+		//if this bot is alive update it.
+		else if ((*curBot)->isAlive())
+		{
+			(*curBot)->Update();
+		}
+	}
+
+	// update the teams
+	if (teamActive) {
+		std::list<Raven_Team*>::iterator it = m_Teams.begin();
+		for (it; it != m_Teams.end(); ++it)
+		{
+			(*it)->Update();
+		}
+	}
 
   //update the triggers
   m_pMap->UpdateTriggerSystem(m_Bots);
@@ -219,29 +249,67 @@ bool Raven_Game::AttemptToAddBot(Raven_Bot* pBot)
     ErrorBox("Map has no spawn points!"); return false;
   }
 
-	//select the team spawn point
-	Vector2D pos = m_pMap->GetSpawnPoints().at(pBot->GetTeam()->GetId());
+  if (teamActive)
+  {
+	  // Get the team spawn pos
+	  Vector2D pos = m_pMap->GetSpawnPoints().at(pBot->GetTeam()->GetId());
 
-	//check to see if it's occupied
-	std::list<Raven_Bot*>::const_iterator curBot = m_Bots.begin();
+	  //check to see if it's occupied
+	  std::list<Raven_Bot*>::const_iterator curBot = m_Bots.begin();
 
-	bool bAvailable = true;
+	  bool bAvailable = true;
 
-	for (curBot; curBot != m_Bots.end(); ++curBot)
-	{
-		//if the spawn point is unoccupied spawn a bot
-		if (Vec2DDistance(pos, (*curBot)->Pos()) < (*curBot)->BRadius())
-		{
-			bAvailable = false;
-		}
-	}
+	  for (curBot; curBot != m_Bots.end(); ++curBot)
+	  {
+		  //if the spawn point is unoccupied spawn a bot
+		  if (Vec2DDistance(pos, (*curBot)->Pos()) < (*curBot)->BRadius())
+		  {
+			  bAvailable = false;
+		  }
+	  }
 
-	if (bAvailable)
-	{  
-		pBot->Spawn(pos);
+	  if (bAvailable)
+	  {
+		  pBot->Spawn(pos);
 
-		return true;   
-	}
+		  return true;
+	  }
+  }
+  else
+  {
+	  //we'll make the same number of attempts to spawn a bot this update as
+	  //there are spawn points
+	  int attempts = m_pMap->GetSpawnPoints().size();
+
+	  while (--attempts >= 0)
+	  {
+		  //select a random spawn point
+		  Vector2D pos = m_pMap->GetRandomSpawnPoint();
+
+		  //check to see if it's occupied
+		  std::list<Raven_Bot*>::const_iterator curBot = m_Bots.begin();
+
+		  bool bAvailable = true;
+
+		  for (curBot; curBot != m_Bots.end(); ++curBot)
+		  {
+			  //if the spawn point is unoccupied spawn a bot
+			  if (Vec2DDistance(pos, (*curBot)->Pos()) < (*curBot)->BRadius())
+			  {
+				  bAvailable = false;
+			  }
+		  }
+
+		  if (bAvailable)
+		  {
+			  pBot->Spawn(pos);
+
+			  return true;
+		  }
+	  }
+  }
+
+	
 
   return false;
 }
@@ -262,20 +330,22 @@ void Raven_Game::AddBots(unsigned int NumBotsToAdd)
 		rb->GetSteering()->WallAvoidanceOn();
 		rb->GetSteering()->SeparationOn();
 
-		//Choose the team of the bot
-		int minNbMembers = -1;
-		Raven_Team* team = 0;
-		std::list<Raven_Team*>::const_iterator curTeam = m_Teams.begin();
-		for (curTeam; curTeam != m_Teams.end(); curTeam++)
-		{
-			Raven_Team* t = *curTeam;
-			if (t->GetNbMembers() <= minNbMembers || minNbMembers == -1)
+		if (teamActive) {
+			//Choose the team of the bot
+			int minNbMembers = -1;
+			Raven_Team* team = 0;
+			std::list<Raven_Team*>::const_iterator curTeam = m_Teams.begin();
+			for (curTeam; curTeam != m_Teams.end(); curTeam++)
 			{
-				minNbMembers = t->GetNbMembers();
-				team = t;
+				Raven_Team* t = *curTeam;
+				if (t->GetNbMembers() <= minNbMembers || minNbMembers == -1)
+				{
+					minNbMembers = t->GetNbMembers();
+					team = t;
+				}
 			}
+			team->AddMember(rb);
 		}
-		team->AddMember(rb);
 		m_Bots.push_back(rb);
 
 		//register the bot with the entity manager
@@ -715,7 +785,7 @@ void Raven_Game::Render()
   m_pGraveMarkers->Render();
   
   //render the map
-  m_pMap->Render();
+  m_pMap->Render(teamActive);
 
   //render all the bots unless the user has selected the option to only 
   //render those bots that are in the fov of the selected bot

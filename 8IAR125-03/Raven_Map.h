@@ -92,7 +92,7 @@ public:
   Raven_Map();  
   ~Raven_Map();
 
-  void Render();
+  void Render(bool teamActive);
 
   //loads an environment from a file
   bool LoadMap(const std::string& FileName); 

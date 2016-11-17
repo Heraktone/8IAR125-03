@@ -47,7 +47,8 @@ Raven_Bot::Raven_Bot(Raven_Game* world,Vector2D pos):
                  m_iScore(0),
                  m_Status(spawning),
                  m_bPossessed(false),
-                 m_dFieldOfView(DegsToRads(script->GetDouble("Bot_FOV")))
+                 m_dFieldOfView(DegsToRads(script->GetDouble("Bot_FOV"))),
+				team(0)
            
 {
   SetEntityType(type_bot);
@@ -105,14 +106,11 @@ Raven_Bot::~Raven_Bot()
 
 // Called whenever the agent dies
 void Raven_Bot::DropWeapon() {
-	if (team) {
+	if (m_pWorld->TeamsActivated()) {
 		// Drop the current weapon
 		Raven_Weapon* w = m_pWeaponSys->GetCurrentWeapon();
 		Vector2D pos = m_pWorld->GetMap()->GetSpawnPoints().at(team->GetId());
 		m_pWorld->GetMap()->AddDroppedWeaponTrigger(pos, w->GetType(), w->NumRoundsRemaining(), team->GetId());
-
-		// Reset the weapon system of the agent
-		m_pWeaponSys->Initialize();
 
 		// Alert the team
 
@@ -514,7 +512,7 @@ void Raven_Bot::Render()
   gdi->ClosedShape(m_vecBotVBTrans);
   
   //draw the head
-  if (team)
+  if (m_pWorld->TeamsActivated())
   {
 	Raven_Team::BrushColor(team->GetId());
   }

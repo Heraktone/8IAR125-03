@@ -170,6 +170,10 @@ LRESULT CALLBACK WindowProc (HWND   hwnd,
          case VK_DOWN:
 
            g_pRaven->RemoveBot(); break;
+
+		 case 'T':
+			 g_pRaven->ActivateTeams(!g_pRaven->TeamsActivated());
+			 break;
            
 
         }
@@ -415,6 +419,7 @@ LRESULT CALLBACK WindowProc (HWND   hwnd,
 
          // kill the application, this sends a WM_QUIT message  
 				 PostQuitMessage (0);
+				 return 0;
 			 }
 
        break;
