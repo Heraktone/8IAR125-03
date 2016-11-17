@@ -12,9 +12,9 @@
 #include "triggers/Trigger_WeaponGiver.h"
 #include "triggers/Trigger_OnButtonSendMsg.h"
 #include "triggers/Trigger_SoundNotify.h"
+#include "triggers/Trigger_DroppedWeapon.h"
 
 #include "Raven_UserOptions.h"
-
 
 //uncomment to write object creation/deletion to debug console
 #define  LOG_CREATIONAL_STUFF
@@ -35,6 +35,11 @@ Raven_Map::Raven_Map():m_pNavGraph(NULL),
 Raven_Map::~Raven_Map()
 {
   Clear();
+}
+
+// Add a dropped weapon trigger
+void Raven_Map::AddDroppedWeaponTrigger(Vector2D pos, unsigned int weapon, int ammo, int team) {
+	m_TriggerSystem.Register(new Trigger_DroppedWeapon(pos, weapon, ammo, team));
 }
 
 

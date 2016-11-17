@@ -103,6 +103,8 @@ public:
 
   void    AddSoundTrigger(Raven_Bot* pSoundSource, double range);
 
+  void    AddDroppedWeaponTrigger(Vector2D pos, unsigned int weapon, int ammo, int team);
+
   double   CalculateCostToTravelBetweenNodes(int nd1, int nd2)const;
 
   //returns the position of a graph node selected at random

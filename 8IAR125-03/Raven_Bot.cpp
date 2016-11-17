@@ -11,6 +11,7 @@
 #include "time/Regulator.h"
 #include "Raven_WeaponSystem.h"
 #include "Raven_SensoryMemory.h"
+#include "armory/Raven_Weapon.h"
 
 #include "Messaging/Telegram.h"
 #include "Raven_Messages.h"
@@ -100,6 +101,22 @@ Raven_Bot::~Raven_Bot()
   delete m_pVisionUpdateRegulator;
   delete m_pWeaponSys;
   delete m_pSensoryMem;
+}
+
+// Called whenever the agent dies
+void Raven_Bot::DropWeapon() {
+	if (team) {
+		// Drop the current weapon
+		Raven_Weapon* w = m_pWeaponSys->GetCurrentWeapon();
+		Vector2D pos = m_pWorld->GetMap()->GetSpawnPoints().at(team->GetId());
+		m_pWorld->GetMap()->AddDroppedWeaponTrigger(pos, w->GetType(), w->NumRoundsRemaining(), team->GetId());
+
+		// Reset the weapon system of the agent
+		m_pWeaponSys->Initialize();
+
+		// Alert the team
+
+	}
 }
 
 //------------------------------- Spawn ---------------------------------------

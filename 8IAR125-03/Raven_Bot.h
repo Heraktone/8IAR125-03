@@ -132,8 +132,10 @@ public:
   Raven_Bot(Raven_Game* world, Vector2D pos);
   virtual ~Raven_Bot();
 
+  // Added methods for team handling
   Raven_Team* GetTeam() { return team; }
   void SetTeam(Raven_Team* team) { this->team = team; };
+  void DropWeapon(); // Called whenever the agent dies
 
   //the usual suspects
   void         Render();
@@ -165,7 +167,10 @@ public:
   bool          isSpawning()const{return m_Status == spawning;}
   
   void          SetSpawning(){m_Status = spawning;}
-  void          SetDead(){m_Status = dead;}
+  void          SetDead(){
+	  m_Status = dead;
+	  DropWeapon();
+  }
   void          SetAlive(){m_Status = alive;}
 
   //returns a value indicating the time in seconds it will take the bot
