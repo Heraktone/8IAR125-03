@@ -81,12 +81,12 @@ void Raven_WeaponSystem::InitializeFuzzyModuleWeaponSystem()
 	FuzzyVariable& AgentVelocity = m_FuzzyModule.CreateFLV("AgentVelocity");
 	FzSet& Agent_Slow = AgentVelocity.AddRightShoulderSet("Agent_Slow", 0, 5, 10);
 	FzSet& Agent_Medium = AgentVelocity.AddTriangularSet("Agent_Medium", 5, 10, 15);
-	FzSet& Agent_Fast = AgentVelocity.AddTriangularSet("Agent_Fast", 10, 15, 50);
+	FzSet& Agent_Fast = AgentVelocity.AddTriangularSet("Agent_Fast", 10, 15, 1000);
 
 	FuzzyVariable& AgentVisibility = m_FuzzyModule.CreateFLV("AgentVisibility");
-	FzSet& Visible_Short = AgentVelocity.AddRightShoulderSet("Visible_Short", 0, 2, 5);
-	FzSet& Visible_Medium = AgentVelocity.AddTriangularSet("Visible_Medium", 2, 5, 6);
-	FzSet& Visible_Long = AgentVelocity.AddTriangularSet("Visible_Long", 5, 6, 20);
+	FzSet& Visible_Short = AgentVelocity.AddRightShoulderSet("Visible_Short", 0, 2 + m_dReactionTime, 5 + m_dReactionTime);
+	FzSet& Visible_Medium = AgentVelocity.AddTriangularSet("Visible_Medium", m_dReactionTime + 2, m_dReactionTime + 5, m_dReactionTime + 6);
+	FzSet& Visible_Long = AgentVelocity.AddTriangularSet("Visible_Long", m_dReactionTime + 5, m_dReactionTime + 6, m_dReactionTime + 10000);
 
 
 	m_FuzzyModule.AddRule(FzAND(Target_Close, Agent_Slow, Visible_Short), Desirable);
@@ -312,8 +312,8 @@ void Raven_WeaponSystem::AddNoiseToAim(Vector2D& AimingPos)
   Vector2D toPos = AimingPos - m_pOwner->Pos();
 
   m_FuzzyModule.Fuzzify("DistToTarget", Vec2DDistance(toPos, m_pOwner->GetTargetSys()->GetTarget()->Pos()));
-  m_FuzzyModule.Fuzzify("AgentVelocity", pow(m_pOwner->GetTargetBot()->Velocity.x, 2) + pow(m_pOwner->GetTargetBot()->Velocity.y, 2));
-  m_FuzzyModule.Fuzzify("AgentVisibility", m_dReactionTime); // Maybe calculate time ?
+  m_FuzzyModule.Fuzzify("AgentVelocity", pow(m_pOwner->GetTargetBot()->Velocity().x, 2) + pow(m_pOwner->GetTargetBot()->Velocity().y, 2));
+  m_FuzzyModule.Fuzzify("AgentVisibility", m_pOwner->GetTargetSys()->GetTimeTargetHasBeenVisible());
 
   double m_dAimAccuracyToTarget = m_FuzzyModule.DeFuzzify("Desirability", FuzzyModule::max_av);
 
