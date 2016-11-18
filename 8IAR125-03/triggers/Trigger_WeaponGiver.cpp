@@ -84,6 +84,18 @@ void Trigger_WeaponGiver::Render()
 
         break;
 
+	  case type_knife:
+		{
+			gdi->RedPen();
+			gdi->RedBrush();
+			gdi->Circle(Pos(), 3);
+			gdi->ThickRedPen();
+			gdi->Line(Pos(), Vector2D(Pos().x, Pos().y - 9));
+		}
+
+		break;
+
+
       case type_shotgun:
         {
 

@@ -140,6 +140,12 @@ RocketLauncher_MaxRoundsCarried = 50
 RocketLauncher_IdealRange  = 150
 RocketLauncher_SoundRange  = 400
 
+Knife_FiringFreq       = 2
+Knife_DefaultRounds      = 1
+Knife_MaxRoundsCarried = 1
+Knife_IdealRange  = 25
+Knife_SoundRange  = 400
+
 Rocket_BlastRadius = 20
 Rocket_MaxSpeed    = 3
 Rocket_Mass        = 1
@@ -162,7 +168,11 @@ Slug_Scale       = Bot_Scale
 Slug_Persistance = 0.2
 Slug_Damage      = 10
 
-
+Knifes_MaxSpeed    = 1
+Knifes_Damage = 1000000
+Knifes_Mass        = 1
+Knifes_MaxForce    = 100.0
+Knifes_Scale       = Bot_Scale
 
 ShotGun_FiringFreq       = 1
 ShotGun_DefaultRounds      = 15
