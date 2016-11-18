@@ -79,6 +79,7 @@ Bot_HealthGoalTweaker     = 1.0
 Bot_ShotgunGoalTweaker    = 1.0
 Bot_RailgunGoalTweaker    = 1.0
 Bot_RocketLauncherTweaker = 1.0
+Bot_GrenadeLauncherTweaker = 1.0
 Bot_AggroGoalTweaker      = 1.0
 
 
@@ -162,7 +163,13 @@ Slug_Scale       = Bot_Scale
 Slug_Persistance = 0.2
 Slug_Damage      = 10
 
-
+Grenade_BlastRadius = 35
+Grenade_MaxSpeed    = 3
+Grenade_Mass        = 1
+Grenade_MaxForce    = 5.0
+Grenade_Scale       = Bot_Scale
+Grenade_Damage      = 15
+Grenade_ExplosionDecayRate = 6.0   --how fast the explosion occurs (in secs)
 
 ShotGun_FiringFreq       = 1
 ShotGun_DefaultRounds      = 15
@@ -179,5 +186,9 @@ Pellet_Scale       = Bot_Scale
 Pellet_Persistance = 0.1
 Pellet_Damage      = 1
 
-
+GrenadeLauncher_DefaultRounds      = 15
+GrenadeLauncher_FiringFreq       = 1.5
+GrenadeLauncher_MaxRoundsCarried = 50
+GrenadeLauncher_IdealRange  = 150
+GrenadeLauncher_SoundRange  = 400
   

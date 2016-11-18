@@ -1,6 +1,7 @@
 #include "Raven_WeaponSystem.h"
 #include "armory/Weapon_RocketLauncher.h"
 #include "armory/Weapon_RailGun.h"
+#include "armory/Weapon_GrenadeLauncher.h"
 #include "armory/Weapon_ShotGun.h"
 #include "armory/Weapon_Blaster.h"
 #include "Raven_Bot.h"
@@ -57,6 +58,7 @@ void Raven_WeaponSystem::Initialize()
   m_WeaponMap[type_shotgun]         = 0;
   m_WeaponMap[type_rail_gun]        = 0;
   m_WeaponMap[type_rocket_launcher] = 0;
+	m_WeaponMap[type_grenade_launcher] = 0;
 }
 
 //-------------------------------- SelectWeapon -------------------------------
@@ -128,8 +130,10 @@ void  Raven_WeaponSystem::AddWeapon(unsigned int weapon_type)
 
     w = new RocketLauncher(m_pOwner); break;
 
-  }//end switch
-  
+	case type_grenade_launcher:
+		
+		w = new GrenadeLauncher(m_pOwner); break;
+	}//end switch
 
   //if the bot already holds a weapon of this type, just add its ammo
   Raven_Weapon* present = GetWeaponFromInventory(weapon_type);

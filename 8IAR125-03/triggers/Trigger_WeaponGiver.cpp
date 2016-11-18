@@ -113,6 +113,22 @@ void Trigger_WeaponGiver::Render()
       
         break;
 
+	  case type_grenade_launcher:
+	  {
+		  gdi->BlackBrush();
+		  gdi->RedBrush();
+		  const double sz = 3.0;
+		  gdi->Circle(Pos().x, Pos().y, sz);
+		  gdi->ThickRedPen();
+		  gdi->Line(Pos(), Vector2D(Pos().x, Pos().y - 9));
+		  gdi->Line(Pos(), Vector2D(Pos().x, Pos().y + 9));
+		  gdi->Line(Pos(), Vector2D(Pos().x + 9, Pos().y));
+		  gdi->Line(Pos(), Vector2D(Pos().x - 9, Pos().y));
+
+	  }
+
+	  break;
+
     }//end switch
   }
 }
