@@ -86,10 +86,10 @@ void Trigger_WeaponGiver::Render()
 
 	  case type_knife:
 		{
-			gdi->RedPen();
-			gdi->RedBrush();
+			gdi->BlackPen();
+			gdi->BlackBrush();
 			gdi->Circle(Pos(), 3);
-			gdi->ThickRedPen();
+			gdi->ThickBlackPen();
 			gdi->Line(Pos(), Vector2D(Pos().x, Pos().y - 9));
 		}
 
