@@ -13,13 +13,13 @@ enum
   type_health,
   type_spawn_point,
   type_rail_gun,
-  type_knife,
   type_rocket_launcher,
   type_shotgun,
   type_blaster,
   type_obstacle,
   type_sliding_door,
-  type_door_trigger
+  type_door_trigger,
+  type_knife
 };
 
 

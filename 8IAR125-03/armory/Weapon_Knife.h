@@ -17,6 +17,10 @@ class  Raven_Bot;
 
 class Knife : public Raven_Weapon
 {
+private:
+
+	void  InitializeFuzzyModule();
+
 public:
 
 	Knife(Raven_Bot* owner);

@@ -64,15 +64,36 @@ double Knife::GetDesirability(double DistToTarget)
 	else
 	{
 		//fuzzify distance and amount of ammo
-		if (DistToTarget <= GetIdealRange() -5) {
-			m_dLastDesirabilityScore = 90;
-		}
-		else {
-			m_dLastDesirabilityScore = 15;
-		}
+		m_FuzzyModule.Fuzzify("DistToTarget", DistToTarget);
+
+		m_dLastDesirabilityScore = m_FuzzyModule.DeFuzzify("Desirability", FuzzyModule::max_av);
+
+		return m_dLastDesirabilityScore;
 	}
 
 	return m_dLastDesirabilityScore;
+}
+
+//----------------------- InitializeFuzzyModule -------------------------------
+//
+//  set up some fuzzy variables and rules
+//-----------------------------------------------------------------------------
+void Knife::InitializeFuzzyModule()
+{
+	FuzzyVariable& DistToTarget = m_FuzzyModule.CreateFLV("DistToTarget");
+
+	FzSet& Target_Close = DistToTarget.AddLeftShoulderSet("Target_Close", 0, 25, 150);
+	FzSet& Target_Medium = DistToTarget.AddTriangularSet("Target_Medium", 25, 150, 300);
+	FzSet& Target_Far = DistToTarget.AddRightShoulderSet("Target_Far", 150, 300, 1000);
+
+	FuzzyVariable& Desirability = m_FuzzyModule.CreateFLV("Desirability");
+	FzSet& VeryDesirable = Desirability.AddRightShoulderSet("VeryDesirable", 50, 75, 100);
+	FzSet& Desirable = Desirability.AddTriangularSet("Desirable", 25, 50, 75);
+	FzSet& Undesirable = Desirability.AddLeftShoulderSet("Undesirable", 0, 25, 50);
+
+	m_FuzzyModule.AddRule(Target_Close, VeryDesirable);
+	m_FuzzyModule.AddRule(Target_Medium, FzVery(Undesirable));
+	m_FuzzyModule.AddRule(Target_Far, FzVery(Undesirable));
 }
 
 //-------------------------------- Render -------------------------------------
