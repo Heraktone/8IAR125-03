@@ -22,6 +22,7 @@ enum
   goal_attack_target,
   goal_hunt_target,
   goal_strafe,
+  goal_alongwalls,
   goal_adjust_range,
   goal_say_phrase
   
