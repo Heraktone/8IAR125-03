@@ -34,6 +34,8 @@ Knife::Knife(Raven_Bot*   owner) :
 		m_vecWeaponVB.push_back(weapon[vtx]);
 	}
 
+	//setup the fuzzy module
+	InitializeFuzzyModule();
 }
 
 
