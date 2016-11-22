@@ -24,6 +24,8 @@ private:
   //a local copy of the path returned by the path planner
   std::list<PathEdge>  m_Path;
 
+  bool clock;
+
 public:
 
   Goal_FollowPath(Raven_Bot* pBot, std::list<PathEdge> path);

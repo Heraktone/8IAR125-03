@@ -6,6 +6,7 @@
 #include "Goal_NegotiateDoor.h"
 #include "misc/cgdi.h"
 
+#include "debug/DebugConsole.h"
 
 
 //------------------------------ ctor -----------------------------------------
@@ -37,7 +38,9 @@ void Goal_FollowPath::Activate()
   {
   case NavGraphEdge::normal:
     {
-      AddSubgoal(new Goal_TraverseEdge(m_pOwner, edge, m_Path.empty()));
+      AddSubgoal(new Goal_TraverseEdge(m_pOwner, edge, m_Path.empty(), clock));
+	  clock = !clock;
+	  
     }
 
     break;

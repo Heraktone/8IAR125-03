@@ -13,16 +13,19 @@
 
 
 
+
 //---------------------------- ctor -------------------------------------------
 //-----------------------------------------------------------------------------
 Goal_TraverseEdge::Goal_TraverseEdge(Raven_Bot* pBot,
                                      PathEdge   edge,
-                                     bool       LastEdge):
+                                     bool       LastEdge, bool clock):
 
                                 Goal<Raven_Bot>(pBot, goal_traverse_edge),
                                 m_Edge(edge),
                                 m_dTimeExpected(0.0),
-                                m_bLastEdgeInPath(LastEdge)
+                                m_bLastEdgeInPath(LastEdge),
+								m_clock(clock),
+								halfway(false)
                                 
 {}
 
@@ -66,9 +69,50 @@ void Goal_TraverseEdge::Activate()
 
   m_dTimeExpected += MarginOfError;
 
+  destination = m_Edge.Destination();
+  if (m_pOwner->GetTargetSys()->GetTarget() != nullptr && !halfway) {
+	  Vector2D direct = destination - m_pOwner->Pos();
+	  Vector2D inter_dest = direct / 2.0f + m_pOwner->Pos();
+	  direct.Normalize();
+	  direct = direct * 15; 
+
+	  if (m_clock) {
+
+		  destination = inter_dest + Vector2D(-direct.y, direct.x);
+
+		  if (m_pOwner->canWalkTo(destination)) {
+			  m_pOwner->GetSteering()->SetTarget(destination);
+		  }
+			 
+		  else {
+			  destination = m_Edge.Destination();
+			  m_pOwner->GetSteering()->SetTarget(destination);
+		  }  
+	  }
+	  else {
+		  destination = inter_dest + Vector2D(direct.y, -direct.x);
+		  
+		  if (m_pOwner->canWalkTo(destination)) {
+			  m_pOwner->GetSteering()->SetTarget(destination);
+		  }
+			  
+		  else {
+			  destination = m_Edge.Destination();
+			  m_pOwner->GetSteering()->SetTarget(destination);
+		  }
+	  }  
+  }
+  else {
+	  destination = m_Edge.Destination();
+	  m_pOwner->GetSteering()->SetTarget(destination);
+  }
 
   //set the steering target
-  m_pOwner->GetSteering()->SetTarget(m_Edge.Destination());
+  // m_pOwner->GetSteering()->SetTarget(m_Edge.Destination());
+  
+
+  
+  
 
   //Set the appropriate steering behavior. If this is the last edge in the path
   //the bot should arrive at the position it points to, else it should seek
@@ -101,6 +145,12 @@ int Goal_TraverseEdge::Process()
   //if the bot has reached the end of the edge return completed
   else
   { 
+	  if (m_pOwner->isAtPosition(destination))
+	  {
+		  halfway = true;
+		  Activate();
+	  }
+
     if (m_pOwner->isAtPosition(m_Edge.Destination()))
     {
       m_iStatus = completed;
@@ -149,10 +199,12 @@ void Goal_TraverseEdge::Render()
   if (m_iStatus == active)
   {
     gdi->BluePen();
-    gdi->Line(m_pOwner->Pos(), m_Edge.Destination());
+    //gdi->Line(m_pOwner->Pos(), m_Edge.Destination());
+	gdi->Line(m_pOwner->Pos(), destination);
     gdi->GreenBrush();
     gdi->BlackPen();
     gdi->Circle(m_Edge.Destination(), 3);
+	gdi->Circle(destination, 3);
   }
 }
 

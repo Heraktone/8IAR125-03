@@ -87,6 +87,8 @@ public:
   //PathEdges.
   Path       GetPath();
 
+  Vector2D search_wall();
+
   //returns the cost to travel from the bot's current position to a specific 
   //graph node. This method makes use of the pre-calculated lookup table
   //created by Raven_Game
