@@ -38,7 +38,7 @@ void Goal_FollowPath::Activate()
   {
   case NavGraphEdge::normal:
     {
-      AddSubgoal(new Goal_TraverseEdge(m_pOwner, edge, m_Path.empty(), clock));
+      AddSubgoal(new Goal_TraverseEdge(m_pOwner, edge, m_Path.empty(), clock, true));
 	  clock = !clock;
 	  
     }

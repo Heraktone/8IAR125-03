@@ -28,7 +28,9 @@ private:
   bool      isStuck()const;
 
   bool m_clock;
-  bool halfway;
+  bool m_halfway;
+  bool m_dodge;
+
 
   Vector2D destination;
   
@@ -37,7 +39,7 @@ public:
 
   Goal_TraverseEdge(Raven_Bot* pBot,
                     PathEdge   edge,
-                    bool       LastEdge, bool clock); 
+                    bool       LastEdge, bool clock, bool dodge); 
 
   //the usual suspects
   void Activate();
