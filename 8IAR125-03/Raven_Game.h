@@ -24,6 +24,7 @@
 #include "misc/utils.h"
 #include "game/EntityFunctionTemplates.h"
 #include "Raven_Bot.h"
+#include "Raven_Team.h"
 #include "navigation/pathmanager.h"
 
 
@@ -43,6 +44,10 @@ private:
  
   //a list of all the bots that are inhabiting the map
   std::list<Raven_Bot*>            m_Bots;
+
+  // a list of all the teams in the map
+  std::list<Raven_Team*>		m_Teams;
+  bool teamActive;
 
   //the user may select a bot to control manually. This is a pointer to that
   //bot
@@ -85,6 +90,9 @@ public:
   
   Raven_Game();
   ~Raven_Game();
+
+  void ActivateTeams(bool activate);
+  bool TeamsActivated() { return teamActive; }
 
   //the usual suspects
   void Render();
@@ -160,6 +168,8 @@ public:
   const std::list<Raven_Bot*>&             GetAllBots()const{return m_Bots;}
   PathManager<Raven_PathPlanner>* const    GetPathManager(){return m_pPathManager;}
   int                                      GetNumBots()const{return m_Bots.size();}
+  const std::list<Raven_Team*>&            GetAllTeams()const { return m_Teams; }
+  int                                      GetNumTeams()const { return m_Teams.size(); }
 
   
   void  TagRaven_BotsWithinViewRange(BaseGameEntity* pRaven_Bot, double range)

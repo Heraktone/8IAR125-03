@@ -291,7 +291,8 @@ void Raven_WeaponSystem::TakeAimAndShoot()
       //longer than the bot's reaction time, shoot the weapon
       if ( m_pOwner->RotateFacingTowardPosition(AimingPos) &&
            (m_pOwner->GetTargetSys()->GetTimeTargetHasBeenVisible() >
-            m_dReactionTime) )
+            m_dReactionTime) &&
+		  m_pOwner->hasLOSto(AimingPos))
       {
         AddNoiseToAim(AimingPos);
         

@@ -11,6 +11,7 @@
 #include "time/Regulator.h"
 #include "Raven_WeaponSystem.h"
 #include "Raven_SensoryMemory.h"
+#include "armory/Raven_Weapon.h"
 
 #include "Messaging/Telegram.h"
 #include "Raven_Messages.h"
@@ -46,7 +47,8 @@ Raven_Bot::Raven_Bot(Raven_Game* world,Vector2D pos):
                  m_iScore(0),
                  m_Status(spawning),
                  m_bPossessed(false),
-                 m_dFieldOfView(DegsToRads(script->GetDouble("Bot_FOV")))
+                 m_dFieldOfView(DegsToRads(script->GetDouble("Bot_FOV"))),
+				team(0)
            
 {
   SetEntityType(type_bot);
@@ -100,6 +102,24 @@ Raven_Bot::~Raven_Bot()
   delete m_pVisionUpdateRegulator;
   delete m_pWeaponSys;
   delete m_pSensoryMem;
+}
+
+// Called whenever the agent dies
+void Raven_Bot::DropWeapon() {
+	if (m_pWorld->TeamsActivated()) {
+		// Choose a position to drop the current weapon
+		double theta = 2 * RandFloat() * pi;
+		int radius = RandInt(20, 30);
+		Vector2D offset(radius * cos(theta), radius * sin(theta));
+		Vector2D pos = m_pWorld->GetMap()->GetSpawnPoints().at(team->GetId()) + offset;
+
+		// Drop the current weapon
+		Raven_Weapon* w = m_pWeaponSys->GetCurrentWeapon();
+		m_pWorld->GetMap()->AddDroppedWeaponTrigger(pos, w->GetType(), w->NumRoundsRemaining(), team->GetId(), m_pWorld);
+
+		// Alert the team
+		team->AddDroppedWeapon(pos);
+	}
 }
 
 //------------------------------- Spawn ---------------------------------------
@@ -497,7 +517,13 @@ void Raven_Bot::Render()
   gdi->ClosedShape(m_vecBotVBTrans);
   
   //draw the head
-  gdi->BrownBrush();
+  if (m_pWorld->TeamsActivated())
+  {
+	Raven_Team::BrushColor(team->GetId());
+  }
+  else {
+	gdi->BrownBrush();
+  }
   gdi->Circle(Pos(), 6.0 * Scale().x);
 
 
