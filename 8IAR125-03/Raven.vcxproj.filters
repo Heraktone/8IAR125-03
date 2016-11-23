@@ -273,6 +273,11 @@
     </ClCompile>
     <ClCompile Include="triggers\Trigger_DroppedWeapon.cpp">
       <Filter>AI\Triggers</Filter>
+    <ClCompile Include="armory\Weapon_Knife.cpp">
+      <Filter>Game\weapons &amp; projectiles\weapons</Filter>
+    </ClCompile>
+    <ClCompile Include="armory\Projectile_Knifes.cpp">
+      <Filter>Game\weapons &amp; projectiles\projectiles</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -617,6 +622,11 @@
     </ClInclude>
     <ClInclude Include="triggers\Trigger_DroppedWeapon.h">
       <Filter>AI\Triggers</Filter>
+    <ClInclude Include="armory\Weapon_Knife.h">
+      <Filter>Game\weapons &amp; projectiles\weapons</Filter>
+    </ClInclude>
+    <ClInclude Include="armory\Projectile_Knifes.h">
+      <Filter>Game\weapons &amp; projectiles\projectiles</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

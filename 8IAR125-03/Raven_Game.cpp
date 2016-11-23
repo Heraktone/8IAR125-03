@@ -22,6 +22,7 @@
 #include "armory/Projectile_Pellet.h"
 #include "armory/Projectile_Slug.h"
 #include "armory/Projectile_Bolt.h"
+#include "armory/Projectile_Knifes.h"
 
 #include "goals/Goal_Think.h"
 #include "goals/Raven_Goal_Types.h"
@@ -423,6 +424,18 @@ void Raven_Game::AddRailGunSlug(Raven_Bot* shooter, Vector2D target)
 #endif
 }
 
+//------------------------- AddRailGunSlug -----------------------------------
+void Raven_Game::AddKnifes(Raven_Bot* shooter, Vector2D target)
+{
+	Raven_Projectile* rp = new Knifes(shooter, target);
+
+	m_Projectiles.push_back(rp);
+
+#ifdef LOG_CREATIONAL_STUFF
+	debug_con << "Adding a knife" << rp->ID() << " at pos " << rp->Pos() << "";
+#endif
+}
+
 //------------------------- AddShotGunPellet -----------------------------------
 void Raven_Game::AddShotGunPellet(Raven_Bot* shooter, Vector2D target)
 {
@@ -618,6 +631,10 @@ void Raven_Game::ChangeWeaponOfPossessedBot(unsigned int weapon)const
     case type_rail_gun:
       
       PossessedBot()->ChangeWeapon(type_rail_gun); return;
+
+	case type_knife:
+
+		PossessedBot()->ChangeWeapon(type_knife); return;
 
     }
   }
