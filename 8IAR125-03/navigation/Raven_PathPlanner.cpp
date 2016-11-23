@@ -13,8 +13,6 @@
 #include "../Raven_Messages.h"
 #include "Messaging/MessageDispatcher.h"
 #include "graph/NodeTypeEnumerations.h"
-#include "Graph/SparseGraph.h"
-#include "../Raven_Map.h"
 
 
 #include "Debug/DebugConsole.h"
@@ -158,19 +156,6 @@ Raven_PathPlanner::Path Raven_PathPlanner::GetPath()
 
   return path;
 }
-/* 
-Vector2D Raven_PathPlanner::search_wall() {
-	//find the closest visible node to the bots position
-	int ClosestNodeToBot = GetClosestNodeToPosition(m_pOwner->Pos());
-
-	typedef NavGraphNode<Trigger<Raven_Bot>*>         GraphNode;
-	typedef SparseGraph<GraphNode, NavGraphEdge>      NavGraph;
-
-	NavGraph graph =  m_pOwner->GetWorld()->GetMap()->GetNavGraph();
-
-
-
-}*/
 
 //--------------------------- SmoothPathEdgesQuick ----------------------------
 //
