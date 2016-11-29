@@ -17,7 +17,7 @@ private:
 	Raven_Game* m_pWorld;
 
 public:
-	Trigger_DroppedWeapon(Vector2D pos, unsigned int weapon, int ammo, int team, Raven_Game* world);
+	Trigger_DroppedWeapon(Vector2D pos, unsigned int weapon, int ammo, int team, Raven_Game* world, int node_idx);
 
 	void Update();
 	void Try(Raven_Bot* bot);

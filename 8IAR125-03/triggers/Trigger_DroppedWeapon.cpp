@@ -4,9 +4,17 @@
 #include "../Raven_Team.h"
 #include "../Raven_Bot.h"
 #include "../Raven_WeaponSystem.h"
+#include "../armory/Weapon_RocketLauncher.h"
+#include "../armory/Weapon_RailGun.h"
+#include "../armory/Weapon_ShotGun.h"
+#include "../armory/Weapon_Blaster.h"
+#include "../armory/Weapon_Knife.h"
+
+
+#include "Debug/DebugConsole.h"
 
 // Constructor
-Trigger_DroppedWeapon::Trigger_DroppedWeapon(Vector2D pos, unsigned int weapon, int ammo, int team, Raven_Game* world) :
+Trigger_DroppedWeapon::Trigger_DroppedWeapon(Vector2D pos, unsigned int weapon, int ammo, int team, Raven_Game* world, int node_idx) :
 	Trigger<Raven_Bot>(BaseGameEntity::GetNextValidID()),
 	m_WeaponType(weapon),
 	m_Ammo(ammo),
@@ -14,6 +22,8 @@ Trigger_DroppedWeapon::Trigger_DroppedWeapon(Vector2D pos, unsigned int weapon, 
 	m_pWorld(world)
 {
 	SetPos(pos);
+	SetGraphNodeIndex(node_idx);
+	SetEntityType(weapon);
 	AddCircularTriggerRegion(pos, 5);
 
 	//create the vertex buffer for the rocket shape
@@ -47,8 +57,43 @@ void Trigger_DroppedWeapon::Try(Raven_Bot* bot) {
 		if (this->isActive() && bot->GetTeam()->GetId() == m_Team && this->isTouchingTrigger(bot->Pos(), bot->BRadius()))
 		{
 			bot->GetWeaponSys()->AddWeapon(EntityType());
+			debug_con << "Bot " << bot->ID() << " picked a weapon " << EntityType() << "";
+
+			Raven_Weapon* w = 0;
+
+			switch (EntityType())
+			{
+				case type_rail_gun:
+
+					w = new RailGun(bot); break;
+
+				case type_knife:
+
+					w = new Knife(bot); break;
+
+				case type_shotgun:
+
+					w = new ShotGun(bot); break;
+
+				case type_rocket_launcher:
+
+					w = new RocketLauncher(bot); break;
+
+			}//end switch
+
+
+			 //if the bot holds a weapon of this type, add its ammo
+			Raven_Weapon* present = bot->GetWeaponSys()->GetWeaponFromInventory(EntityType());
+
+			if (present)
+			{
+				present->IncrementRounds(m_Ammo);
+			}
+			delete w;
+
 			bot->GetTeam()->RemoveDroppedWeapon(m_vPosition);
 			SetToBeRemovedFromGame();
+			SetInactive();
 		}
 	}
 }
