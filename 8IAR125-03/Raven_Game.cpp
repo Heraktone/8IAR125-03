@@ -23,11 +23,10 @@
 #include "armory/Projectile_Slug.h"
 #include "armory/Projectile_Bolt.h"
 #include "armory/Projectile_Grenade.h"
+#include "armory/Projectile_Knifes.h"
 
 #include "goals/Goal_Think.h"
 #include "goals/Raven_Goal_Types.h"
-
-
 
 //uncomment to write object creation/deletion to debug console
 //#define  LOG_CREATIONAL_STUFF
@@ -40,7 +39,8 @@ Raven_Game::Raven_Game():m_pSelectedBot(NULL),
                          m_bRemoveABot(false),
                          m_pMap(NULL),
                          m_pPathManager(NULL),
-                         m_pGraveMarkers(NULL)
+                         m_pGraveMarkers(NULL),
+						 teamActive(true)
 {
   //load in the default map
   LoadMap(script->GetString("StartMap"));
@@ -56,6 +56,33 @@ Raven_Game::~Raven_Game()
   delete m_pMap;
   
   delete m_pGraveMarkers;
+}
+
+void Raven_Game::ActivateTeams(bool activate) {
+	if (activate)
+	{
+		teamActive = true;
+		std::list<Raven_Bot*>::iterator it = m_Bots.begin();
+		std::list<Raven_Team*>::iterator itTeam = m_Teams.begin();
+		for (it; it != m_Bots.end(); ++it)
+		{
+			(*itTeam)->AddMember((*it));
+			itTeam++;
+			if (itTeam == m_Teams.end())
+			{
+				itTeam = m_Teams.begin();
+			}
+		}
+	}
+	else
+	{
+		teamActive = false;
+		std::list<Raven_Bot*>::iterator it = m_Bots.begin();
+		for (it; it != m_Bots.end(); ++it)
+		{
+			(*it)->GetTeam()->RemoveMember(*it);
+		}
+	}
 }
 
 
@@ -81,6 +108,13 @@ void Raven_Game::Clear()
     delete *it;
   }
 
+  //delete the teams
+  std::list<Raven_Team*>::iterator it2 = m_Teams.begin();
+  for (it2; it2 != m_Teams.end(); ++it2)
+  {
+	  delete *it2;
+  }
+
   //delete any active projectiles
   std::list<Raven_Projectile*>::iterator curW = m_Projectiles.begin();
   for (curW; curW != m_Projectiles.end(); ++curW)
@@ -95,6 +129,7 @@ void Raven_Game::Clear()
   //clear the containers
   m_Projectiles.clear();
   m_Bots.clear();
+  m_Teams.clear();
 
   m_pSelectedBot = NULL;
 
@@ -106,74 +141,83 @@ void Raven_Game::Clear()
 //  calls the update function of each entity
 //-----------------------------------------------------------------------------
 void Raven_Game::Update()
-{ 
-  //don't update if the user has paused the game
-  if (m_bPaused) return;
+{
+	//don't update if the user has paused the game
+	if (m_bPaused) return;
 
-  m_pGraveMarkers->Update();
+	m_pGraveMarkers->Update();
 
-  //get any player keyboard input
-  GetPlayerInput();
-  
-  //update all the queued searches in the path manager
-  m_pPathManager->UpdateSearches();
+	//get any player keyboard input
+	GetPlayerInput();
 
-  //update any doors
-  std::vector<Raven_Door*>::iterator curDoor =m_pMap->GetDoors().begin();
-  for (curDoor; curDoor != m_pMap->GetDoors().end(); ++curDoor)
-  {
-    (*curDoor)->Update();
-  }
+	//update all the queued searches in the path manager
+	m_pPathManager->UpdateSearches();
 
-  //update any current projectiles
-  std::list<Raven_Projectile*>::iterator curW = m_Projectiles.begin();
-  while (curW != m_Projectiles.end())
-  {
-    //test for any dead projectiles and remove them if necessary
-    if (!(*curW)->isDead())
-    {
-      (*curW)->Update();
+	//update any doors
+	std::vector<Raven_Door*>::iterator curDoor = m_pMap->GetDoors().begin();
+	for (curDoor; curDoor != m_pMap->GetDoors().end(); ++curDoor)
+	{
+		(*curDoor)->Update();
+	}
 
-      ++curW;
-    }
-    else
-    {    
-      delete *curW;
+	//update any current projectiles
+	std::list<Raven_Projectile*>::iterator curW = m_Projectiles.begin();
+	while (curW != m_Projectiles.end())
+	{
+		//test for any dead projectiles and remove them if necessary
+		if (!(*curW)->isDead())
+		{
+			(*curW)->Update();
 
-      curW = m_Projectiles.erase(curW);
-    }   
-  }
-  
-  //update the bots
-  bool bSpawnPossible = true;
-  
-  std::list<Raven_Bot*>::iterator curBot = m_Bots.begin();
-  for (curBot; curBot != m_Bots.end(); ++curBot)
-  {
-    //if this bot's status is 'respawning' attempt to resurrect it from
-    //an unoccupied spawn point
-    if ((*curBot)->isSpawning() && bSpawnPossible)
-    {
-      bSpawnPossible = AttemptToAddBot(*curBot);
-    }
-    
-    //if this bot's status is 'dead' add a grave at its current location 
-    //then change its status to 'respawning'
-    else if ((*curBot)->isDead())
-    {
-      //create a grave
-      m_pGraveMarkers->AddGrave((*curBot)->Pos());
+			++curW;
+		}
+		else
+		{
+			delete *curW;
 
-      //change its status to spawning
-      (*curBot)->SetSpawning();
-    }
+			curW = m_Projectiles.erase(curW);
+		}
+	}
 
-    //if this bot is alive update it.
-    else if ( (*curBot)->isAlive())
-    {
-      (*curBot)->Update();
-    }  
-  } 
+	//update the bots
+	bool bSpawnPossible = true;
+
+	std::list<Raven_Bot*>::iterator curBot = m_Bots.begin();
+	for (curBot; curBot != m_Bots.end(); ++curBot)
+	{
+		//if this bot's status is 'respawning' attempt to resurrect it from
+		//an unoccupied spawn point
+		if ((*curBot)->isSpawning() && bSpawnPossible)
+		{
+			bSpawnPossible = AttemptToAddBot(*curBot);
+		}
+
+		//if this bot's status is 'dead' add a grave at its current location 
+		//then change its status to 'respawning'
+		else if ((*curBot)->isDead())
+		{
+			//create a grave
+			m_pGraveMarkers->AddGrave((*curBot)->Pos());
+
+			//change its status to spawning
+			(*curBot)->SetSpawning();
+		}
+
+		//if this bot is alive update it.
+		else if ((*curBot)->isAlive())
+		{
+			(*curBot)->Update();
+		}
+	}
+
+	// update the teams
+	if (teamActive) {
+		std::list<Raven_Team*>::iterator it = m_Teams.begin();
+		for (it; it != m_Teams.end(); ++it)
+		{
+			(*it)->Update();
+		}
+	}
 
   //update the triggers
   m_pMap->UpdateTriggerSystem(m_Bots);
@@ -207,36 +251,67 @@ bool Raven_Game::AttemptToAddBot(Raven_Bot* pBot)
     ErrorBox("Map has no spawn points!"); return false;
   }
 
-  //we'll make the same number of attempts to spawn a bot this update as
-  //there are spawn points
-  int attempts = m_pMap->GetSpawnPoints().size();
+  if (teamActive)
+  {
+	  // Get the team spawn pos
+	  Vector2D pos = m_pMap->GetSpawnPoints().at(pBot->GetTeam()->GetId());
 
-  while (--attempts >= 0)
-  { 
-    //select a random spawn point
-    Vector2D pos = m_pMap->GetRandomSpawnPoint();
+	  //check to see if it's occupied
+	  std::list<Raven_Bot*>::const_iterator curBot = m_Bots.begin();
 
-    //check to see if it's occupied
-    std::list<Raven_Bot*>::const_iterator curBot = m_Bots.begin();
+	  bool bAvailable = true;
 
-    bool bAvailable = true;
+	  for (curBot; curBot != m_Bots.end(); ++curBot)
+	  {
+		  //if the spawn point is unoccupied spawn a bot
+		  if (Vec2DDistance(pos, (*curBot)->Pos()) < (*curBot)->BRadius())
+		  {
+			  bAvailable = false;
+		  }
+	  }
 
-    for (curBot; curBot != m_Bots.end(); ++curBot)
-    {
-      //if the spawn point is unoccupied spawn a bot
-      if (Vec2DDistance(pos, (*curBot)->Pos()) < (*curBot)->BRadius())
-      {
-        bAvailable = false;
-      }
-    }
+	  if (bAvailable)
+	  {
+		  pBot->Spawn(pos);
 
-    if (bAvailable)
-    {  
-      pBot->Spawn(pos);
-
-      return true;   
-    }
+		  return true;
+	  }
   }
+  else
+  {
+	  //we'll make the same number of attempts to spawn a bot this update as
+	  //there are spawn points
+	  int attempts = m_pMap->GetSpawnPoints().size();
+
+	  while (--attempts >= 0)
+	  {
+		  //select a random spawn point
+		  Vector2D pos = m_pMap->GetRandomSpawnPoint();
+
+		  //check to see if it's occupied
+		  std::list<Raven_Bot*>::const_iterator curBot = m_Bots.begin();
+
+		  bool bAvailable = true;
+
+		  for (curBot; curBot != m_Bots.end(); ++curBot)
+		  {
+			  //if the spawn point is unoccupied spawn a bot
+			  if (Vec2DDistance(pos, (*curBot)->Pos()) < (*curBot)->BRadius())
+			  {
+				  bAvailable = false;
+			  }
+		  }
+
+		  if (bAvailable)
+		  {
+			  pBot->Spawn(pos);
+
+			  return true;
+		  }
+	  }
+  }
+
+	
 
   return false;
 }
@@ -247,26 +322,42 @@ bool Raven_Game::AttemptToAddBot(Raven_Bot* pBot)
 //-----------------------------------------------------------------------------
 void Raven_Game::AddBots(unsigned int NumBotsToAdd)
 { 
-  while (NumBotsToAdd--)
-  {
-    //create a bot. (its position is irrelevant at this point because it will
-    //not be rendered until it is spawned)
-    Raven_Bot* rb = new Raven_Bot(this, Vector2D());
+	while (NumBotsToAdd--)
+	{
+		//create a bot. (its position is irrelevant at this point because it will
+		//not be rendered until it is spawned)
+		Raven_Bot* rb = new Raven_Bot(this, Vector2D());
 
-    //switch the default steering behaviors on
-    rb->GetSteering()->WallAvoidanceOn();
-    rb->GetSteering()->SeparationOn();
+		//switch the default steering behaviors on
+		rb->GetSteering()->WallAvoidanceOn();
+		rb->GetSteering()->SeparationOn();
 
-    m_Bots.push_back(rb);
+		if (teamActive) {
+			//Choose the team of the bot
+			int minNbMembers = -1;
+			Raven_Team* team = 0;
+			std::list<Raven_Team*>::const_iterator curTeam = m_Teams.begin();
+			for (curTeam; curTeam != m_Teams.end(); curTeam++)
+			{
+				Raven_Team* t = *curTeam;
+				if (t->GetNbMembers() <= minNbMembers || minNbMembers == -1)
+				{
+					minNbMembers = t->GetNbMembers();
+					team = t;
+				}
+			}
+			team->AddMember(rb);
+		}
+		m_Bots.push_back(rb);
 
-    //register the bot with the entity manager
-    EntityMgr->RegisterEntity(rb);
+		//register the bot with the entity manager
+		EntityMgr->RegisterEntity(rb);
 
     
-#ifdef LOG_CREATIONAL_STUFF
-  debug_con << "Adding bot with ID " << ttos(rb->ID()) << "";
-#endif
-  }
+		#ifdef LOG_CREATIONAL_STUFF
+		debug_con << "Adding bot with ID " << ttos(rb->ID()) << "";
+		#endif
+	}
 }
 
 //---------------------------- NotifyAllBotsOfRemoval -------------------------
@@ -347,6 +438,18 @@ void Raven_Game::AddRailGunSlug(Raven_Bot* shooter, Vector2D target)
 #endif
 }
 
+//------------------------- AddRailGunSlug -----------------------------------
+void Raven_Game::AddKnifes(Raven_Bot* shooter, Vector2D target)
+{
+	Raven_Projectile* rp = new Knifes(shooter, target);
+
+	m_Projectiles.push_back(rp);
+
+#ifdef LOG_CREATIONAL_STUFF
+	debug_con << "Adding a knife" << rp->ID() << " at pos " << rp->Pos() << "";
+#endif
+}
+
 //------------------------- AddShotGunPellet -----------------------------------
 void Raven_Game::AddShotGunPellet(Raven_Bot* shooter, Vector2D target)
 {
@@ -406,10 +509,16 @@ bool Raven_Game::LoadMap(const std::string& filename)
   //make sure the entity manager is reset
   EntityMgr->Reset();
 
-
   //load the new map data
   if (m_pMap->LoadMap(filename))
   { 
+	int nbTeams = m_pMap->GetSpawnPoints().size();
+
+	// Create the teams
+	for (int t = 0; t < nbTeams; t++) {
+		m_Teams.push_back(new Raven_Team(t, this));
+	}
+
     AddBots(script->GetInt("NumBots"));
   
     return true;
@@ -540,6 +649,10 @@ void Raven_Game::ChangeWeaponOfPossessedBot(unsigned int weapon)const
     case type_rail_gun:
       
       PossessedBot()->ChangeWeapon(type_rail_gun); return;
+
+	case type_knife:
+
+		PossessedBot()->ChangeWeapon(type_knife); return;
 
     }
   }
@@ -707,7 +820,7 @@ void Raven_Game::Render()
   m_pGraveMarkers->Render();
   
   //render the map
-  m_pMap->Render();
+  m_pMap->Render(teamActive);
 
   //render all the bots unless the user has selected the option to only 
   //render those bots that are in the fov of the selected bot

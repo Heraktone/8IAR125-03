@@ -25,6 +25,7 @@ class Regulator;
 class Raven_Weapon;
 struct Telegram;
 class Raven_Bot;
+class Raven_Team;
 class Goal_Think;
 class Raven_WeaponSystem;
 class Raven_SensoryMemory;
@@ -42,6 +43,9 @@ private:
 
   //alive, dead or spawning?
   Status                             m_Status;
+
+  // The team of the bot
+  Raven_Team* team;
 
   //a pointer to the world data
   Raven_Game*                        m_pWorld;
@@ -128,6 +132,11 @@ public:
   Raven_Bot(Raven_Game* world, Vector2D pos);
   virtual ~Raven_Bot();
 
+  // Added methods for team handling
+  Raven_Team* GetTeam() { return team; }
+  void SetTeam(Raven_Team* team) { this->team = team; };
+  void DropWeapon(); // Called whenever the agent dies
+
   //the usual suspects
   void         Render();
   void         Update();
@@ -158,7 +167,10 @@ public:
   bool          isSpawning()const{return m_Status == spawning;}
   
   void          SetSpawning(){m_Status = spawning;}
-  void          SetDead(){m_Status = dead;}
+  void          SetDead(){
+	  m_Status = dead;
+	  DropWeapon();
+  }
   void          SetAlive(){m_Status = alive;}
 
   //returns a value indicating the time in seconds it will take the bot

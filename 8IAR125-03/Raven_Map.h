@@ -92,7 +92,7 @@ public:
   Raven_Map();  
   ~Raven_Map();
 
-  void Render();
+  void Render(bool teamActive);
 
   //loads an environment from a file
   bool LoadMap(const std::string& FileName); 
@@ -102,6 +102,8 @@ public:
   Wall2D* AddWall(Vector2D from, Vector2D to);
 
   void    AddSoundTrigger(Raven_Bot* pSoundSource, double range);
+
+  void    AddDroppedWeaponTrigger(Vector2D pos, unsigned int weapon, int ammo, int team, Raven_Game* world);
 
   double   CalculateCostToTravelBetweenNodes(int nd1, int nd2)const;
 

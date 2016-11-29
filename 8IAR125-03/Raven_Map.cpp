@@ -3,6 +3,7 @@
 #include "misc/Cgdi.h"
 #include "Graph/HandyGraphFunctions.h"
 #include "Raven_Door.h"
+#include "Raven_Team.h"
 #include "game/EntityManager.h"
 #include "constants.h"
 #include "lua/Raven_Scriptor.h"
@@ -11,9 +12,9 @@
 #include "triggers/Trigger_WeaponGiver.h"
 #include "triggers/Trigger_OnButtonSendMsg.h"
 #include "triggers/Trigger_SoundNotify.h"
+#include "triggers/Trigger_DroppedWeapon.h"
 
 #include "Raven_UserOptions.h"
-
 
 //uncomment to write object creation/deletion to debug console
 #define  LOG_CREATIONAL_STUFF
@@ -36,6 +37,10 @@ Raven_Map::~Raven_Map()
   Clear();
 }
 
+// Add a dropped weapon trigger
+void Raven_Map::AddDroppedWeaponTrigger(Vector2D pos, unsigned int weapon, int ammo, int team, Raven_Game* world) {
+	m_TriggerSystem.Register(new Trigger_DroppedWeapon(pos, weapon, ammo, team, world));
+}
 
 //---------------------------- Clear ------------------------------------------
 //
@@ -273,6 +278,10 @@ bool Raven_Map::LoadMap(const std::string& filename)
      
        AddWeapon_Giver(type_rail_gun, in); break;
 
+   case type_knife:
+
+	   AddWeapon_Giver(type_knife, in); break;
+
    case type_rocket_launcher:
      
        AddWeapon_Giver(type_rocket_launcher, in); break;
@@ -380,7 +389,7 @@ Vector2D Raven_Map::GetRandomNodeLocation()const
 
 //--------------------------- Render ------------------------------------------
 //-----------------------------------------------------------------------------
-void Raven_Map::Render()
+void Raven_Map::Render(bool teamActive)
 {
   //render the navgraph
   if (UserOptions->m_bShowGraph)
@@ -407,10 +416,19 @@ void Raven_Map::Render()
   }
 
   std::vector<Vector2D>::const_iterator curSp = m_SpawnPoints.begin();
-  for (curSp; curSp != m_SpawnPoints.end(); ++curSp)
+  int t = 0;
+  for (curSp; curSp != m_SpawnPoints.end(); ++curSp, t++)
   {
     gdi->GreyBrush();
-    gdi->GreyPen();
+	if (teamActive)
+	{
+		Raven_Team::PenColor(t);
+	}
+	else
+	{
+		gdi->BlackPen();
+	}
+
     gdi->Circle(*curSp, 7);
   }
 }

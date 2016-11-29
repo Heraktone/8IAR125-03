@@ -4,6 +4,7 @@
 #include "armory/Weapon_GrenadeLauncher.h"
 #include "armory/Weapon_ShotGun.h"
 #include "armory/Weapon_Blaster.h"
+#include "armory/Weapon_Knife.h"
 #include "Raven_Bot.h"
 #include "misc/utils.h"
 #include "lua/Raven_Scriptor.h"
@@ -24,6 +25,7 @@ Raven_WeaponSystem::Raven_WeaponSystem(Raven_Bot* owner,
                                                           m_dAimPersistance(AimPersistance)
 {
   Initialize();
+  InitializeFuzzyModuleWeaponSystem();
 }
 
 //------------------------- dtor ----------------------------------------------
@@ -57,8 +59,77 @@ void Raven_WeaponSystem::Initialize()
   m_WeaponMap[type_blaster]         = m_pCurrentWeapon;
   m_WeaponMap[type_shotgun]         = 0;
   m_WeaponMap[type_rail_gun]        = 0;
+  m_WeaponMap[type_knife] = 0;
   m_WeaponMap[type_rocket_launcher] = 0;
 	m_WeaponMap[type_grenade_launcher] = 0;
+}
+
+//-------------------------  InitializeFuzzyModuleWeaponSystem ----------------------------
+//
+//  set up some fuzzy variables and rules
+//-----------------------------------------------------------------------------
+void Raven_WeaponSystem::InitializeFuzzyModuleWeaponSystem()
+{
+	FuzzyVariable& DistToTarget = m_FuzzyModule.CreateFLV("DistToTarget");
+
+	FzSet& Target_Close = DistToTarget.AddLeftShoulderSet("Target_Close", 0, 25, 150);
+	FzSet& Target_Medium = DistToTarget.AddTriangularSet("Target_Medium", 25, 150, 300);
+	FzSet& Target_Far = DistToTarget.AddRightShoulderSet("Target_Far", 150, 300, 1000);
+
+	//the desirability here is the chance for a shot to touch the target
+	FuzzyVariable& Desirability = m_FuzzyModule.CreateFLV("Desirability");
+	FzSet& VeryDesirable = Desirability.AddRightShoulderSet("VeryDesirable", 50, 75, 100);
+	FzSet& Desirable = Desirability.AddTriangularSet("Desirable", 25, 50, 75);
+	FzSet& Undesirable = Desirability.AddLeftShoulderSet("Undesirable", 0, 25, 50);
+
+	FuzzyVariable& AgentVelocity = m_FuzzyModule.CreateFLV("AgentVelocity");
+	FzSet& Agent_Slow = AgentVelocity.AddRightShoulderSet("Agent_Slow", 0, 5, 10);
+	FzSet& Agent_Medium = AgentVelocity.AddTriangularSet("Agent_Medium", 5, 10, 15);
+	FzSet& Agent_Fast = AgentVelocity.AddTriangularSet("Agent_Fast", 10, 15, 1000);
+
+	FuzzyVariable& AgentVisibility = m_FuzzyModule.CreateFLV("AgentVisibility");
+	FzSet& Visible_Short = AgentVisibility.AddRightShoulderSet("Visible_Short", 0, m_dReactionTime + 2, m_dReactionTime + 5);
+	FzSet& Visible_Medium = AgentVisibility.AddTriangularSet("Visible_Medium", m_dReactionTime + 2, m_dReactionTime + 5, m_dReactionTime + 6);
+	FzSet& Visible_Long = AgentVisibility.AddTriangularSet("Visible_Long", m_dReactionTime + 5, m_dReactionTime + 6, m_dReactionTime + 100);
+
+
+	m_FuzzyModule.AddRule(FzAND(Target_Close, Agent_Slow, Visible_Short), Desirable);
+	m_FuzzyModule.AddRule(FzAND(Target_Close, Agent_Slow, Visible_Medium), VeryDesirable);
+	m_FuzzyModule.AddRule(FzAND(Target_Close, Agent_Slow, Visible_Long), VeryDesirable);
+
+	m_FuzzyModule.AddRule(FzAND(Target_Close, Agent_Medium, Visible_Short), Desirable);
+	m_FuzzyModule.AddRule(FzAND(Target_Close, Agent_Medium, Visible_Medium), VeryDesirable);
+	m_FuzzyModule.AddRule(FzAND(Target_Close, Agent_Medium, Visible_Long), VeryDesirable);
+
+	m_FuzzyModule.AddRule(FzAND(Target_Close, Agent_Fast, Visible_Short), Desirable);
+	m_FuzzyModule.AddRule(FzAND(Target_Close, Agent_Fast, Visible_Medium), Desirable);
+	m_FuzzyModule.AddRule(FzAND(Target_Close, Agent_Fast, Visible_Long), VeryDesirable);
+
+	m_FuzzyModule.AddRule(FzAND(Target_Medium, Agent_Slow, Visible_Short), Desirable);
+	m_FuzzyModule.AddRule(FzAND(Target_Medium, Agent_Slow, Visible_Medium), Desirable);
+	m_FuzzyModule.AddRule(FzAND(Target_Medium, Agent_Slow, Visible_Long), VeryDesirable);
+
+	m_FuzzyModule.AddRule(FzAND(Target_Medium, Agent_Medium, Visible_Short), Undesirable);
+	m_FuzzyModule.AddRule(FzAND(Target_Medium, Agent_Medium, Visible_Medium), Desirable);
+	m_FuzzyModule.AddRule(FzAND(Target_Medium, Agent_Medium, Visible_Long), VeryDesirable);
+
+	m_FuzzyModule.AddRule(FzAND(Target_Medium, Agent_Fast, Visible_Short), Undesirable);
+	m_FuzzyModule.AddRule(FzAND(Target_Medium, Agent_Fast, Visible_Medium), Undesirable);
+	m_FuzzyModule.AddRule(FzAND(Target_Medium, Agent_Fast, Visible_Long), Desirable);
+
+	m_FuzzyModule.AddRule(FzAND(Target_Far, Agent_Slow, Visible_Short), Undesirable);
+	m_FuzzyModule.AddRule(FzAND(Target_Far, Agent_Slow, Visible_Medium), Desirable);
+	m_FuzzyModule.AddRule(FzAND(Target_Far, Agent_Slow, Visible_Long), Desirable);
+
+	m_FuzzyModule.AddRule(FzAND(Target_Far, Agent_Medium, Visible_Short), Undesirable);
+	m_FuzzyModule.AddRule(FzAND(Target_Far, Agent_Medium, Visible_Medium), Undesirable);
+	m_FuzzyModule.AddRule(FzAND(Target_Far, Agent_Medium, Visible_Long), Desirable);
+
+	m_FuzzyModule.AddRule(FzAND(Target_Far, Agent_Fast, Visible_Short), Undesirable);
+	m_FuzzyModule.AddRule(FzAND(Target_Far, Agent_Fast, Visible_Medium), Undesirable);
+	m_FuzzyModule.AddRule(FzAND(Target_Far, Agent_Fast, Visible_Long), Undesirable);
+
+	
 }
 
 //-------------------------------- SelectWeapon -------------------------------
@@ -122,6 +193,10 @@ void  Raven_WeaponSystem::AddWeapon(unsigned int weapon_type)
 
     w = new RailGun(m_pOwner); break;
 
+  case type_knife:
+
+    w = new Knife(m_pOwner); break;
+
   case type_shotgun:
 
     w = new ShotGun(m_pOwner); break;
@@ -177,7 +252,7 @@ void Raven_WeaponSystem::ChangeWeapon(unsigned int type)
 //  this method aims the bots current weapon at the target (if there is a
 //  target) and, if aimed correctly, fires a round
 //-----------------------------------------------------------------------------
-void Raven_WeaponSystem::TakeAimAndShoot()const
+void Raven_WeaponSystem::TakeAimAndShoot()
 {
   //aim the weapon only if the current target is shootable or if it has only
   //very recently gone out of view (this latter condition is to ensure the 
@@ -194,7 +269,8 @@ void Raven_WeaponSystem::TakeAimAndShoot()const
     //must be adjusted to take into account the predicted movement of the 
     //target
     if (GetCurrentWeapon()->GetType() == type_rocket_launcher ||
-        GetCurrentWeapon()->GetType() == type_blaster)
+		GetCurrentWeapon()->GetType() == type_knife ||
+		GetCurrentWeapon()->GetType() == type_blaster)
     {
       AimingPos = PredictFuturePositionOfTarget();
 
@@ -219,7 +295,8 @@ void Raven_WeaponSystem::TakeAimAndShoot()const
       //longer than the bot's reaction time, shoot the weapon
       if ( m_pOwner->RotateFacingTowardPosition(AimingPos) &&
            (m_pOwner->GetTargetSys()->GetTimeTargetHasBeenVisible() >
-            m_dReactionTime) )
+            m_dReactionTime) &&
+		  m_pOwner->hasLOSto(AimingPos))
       {
         AddNoiseToAim(AimingPos);
         
@@ -242,11 +319,19 @@ void Raven_WeaponSystem::TakeAimAndShoot()const
 //  adds a random deviation to the firing angle not greater than m_dAimAccuracy 
 //  rads
 //-----------------------------------------------------------------------------
-void Raven_WeaponSystem::AddNoiseToAim(Vector2D& AimingPos)const
+void Raven_WeaponSystem::AddNoiseToAim(Vector2D& AimingPos)
 {
   Vector2D toPos = AimingPos - m_pOwner->Pos();
 
-  Vec2DRotateAroundOrigin(toPos, RandInRange(-m_dAimAccuracy, m_dAimAccuracy));
+  m_FuzzyModule.Fuzzify("DistToTarget", Vec2DDistance(toPos, m_pOwner->GetTargetSys()->GetTarget()->Pos()));
+  m_FuzzyModule.Fuzzify("AgentVelocity", pow(m_pOwner->GetTargetBot()->Velocity().x, 2) + pow(m_pOwner->GetTargetBot()->Velocity().y, 2));
+  m_FuzzyModule.Fuzzify("AgentVisibility", m_pOwner->GetTargetSys()->GetTimeTargetHasBeenVisible());
+
+  double m_dAimAccuracyToTarget = m_FuzzyModule.DeFuzzify("Desirability", FuzzyModule::max_av);
+
+  m_dAimAccuracyToTarget = (m_dAimAccuracyToTarget / ((double)100)) * m_dAimAccuracy;
+
+  Vec2DRotateAroundOrigin(toPos, RandInRange(-m_dAimAccuracyToTarget, m_dAimAccuracyToTarget));
 
   AimingPos = toPos + m_pOwner->Pos();
 }

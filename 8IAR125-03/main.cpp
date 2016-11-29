@@ -162,6 +162,12 @@ LRESULT CALLBACK WindowProc (HWND   hwnd,
 
 			 break;
 
+		 case '5':
+
+			 g_pRaven->ChangeWeaponOfPossessedBot(type_knife);
+
+			 break;
+
          case 'X':
 
            g_pRaven->ExorciseAnyPossessedBot();
@@ -176,6 +182,10 @@ LRESULT CALLBACK WindowProc (HWND   hwnd,
          case VK_DOWN:
 
            g_pRaven->RemoveBot(); break;
+
+		 case 'T':
+			 g_pRaven->ActivateTeams(!g_pRaven->TeamsActivated());
+			 break;
            
 
         }
@@ -421,6 +431,7 @@ LRESULT CALLBACK WindowProc (HWND   hwnd,
 
          // kill the application, this sends a WM_QUIT message  
 				 PostQuitMessage (0);
+				 exit (0);
 			 }
 
        break;
