@@ -27,11 +27,19 @@ private:
   //returns true if the bot gets stuck
   bool      isStuck()const;
 
+  bool m_clock;
+  bool m_halfway;
+  bool m_dodge;
+
+
+  Vector2D destination;
+  
+
 public:
 
   Goal_TraverseEdge(Raven_Bot* pBot,
                     PathEdge   edge,
-                    bool       LastEdge); 
+                    bool       LastEdge, bool clock, bool dodge); 
 
   //the usual suspects
   void Activate();
