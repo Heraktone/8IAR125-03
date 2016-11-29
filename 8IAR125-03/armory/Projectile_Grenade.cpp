@@ -9,8 +9,10 @@
 
 #include "../Raven_Messages.h"
 #include "Messaging/MessageDispatcher.h"
-
-
+void waitThread(int ms, Grenade* grenade) {
+	std::this_thread::sleep_for(std::chrono::milliseconds(ms));
+	grenade->Detonate();
+}
 //-------------------------- ctor ---------------------------------------------
 //-----------------------------------------------------------------------------
 Grenade::Grenade(Raven_Bot* shooter, Vector2D target) :
@@ -27,9 +29,17 @@ Grenade::Grenade(Raven_Bot* shooter, Vector2D target) :
 		script->GetDouble("Grenade_MaxForce")),
 
 	m_dCurrentBlastRadius(0.0),
-	m_dBlastRadius(script->GetDouble("Grenade_BlastRadius"))
+	m_dBlastRadius(script->GetDouble("Grenade_BlastRadius")),
+	detonate(false),
+	detonationStart(false)
 {
 	assert(target != Vector2D());
+}
+
+Grenade::~Grenade()
+{
+	delete m_waitThread;
+	m_waitThread = nullptr;
 }
 
 
@@ -49,9 +59,12 @@ void Grenade::Update()
 
 		TestForImpact();
 	}
-
-	else
-	{
+	if(detonate) {
+		if (!detonationStart) {
+			m_waitThread->join();
+			InflictDamageOnBotsWithinBlastRadius();
+			detonationStart = true;
+		}
 		m_dCurrentBlastRadius += script->GetDouble("Grenade_ExplosionDecayRate");
 
 		//when the rendered blast circle becomes equal in size to the blast radius
@@ -61,6 +74,11 @@ void Grenade::Update()
 			m_bDead = true;
 		}
 	}
+}
+
+void Grenade::Detonate()
+{
+	detonate = true;
 }
 
 void Grenade::TestForImpact()
@@ -87,9 +105,9 @@ void Grenade::TestForImpact()
 			hit->ID(),
 			Msg_TakeThatMF,
 			(void*)&m_iDamageInflicted);
-
+		m_waitThread = new std::thread(waitThread,0,this);
 		//test for bots within the blast radius and inflict damage
-		InflictDamageOnBotsWithinBlastRadius();
+		//InflictDamageOnBotsWithinBlastRadius();
 	}
 
 	//test for impact with a wall
@@ -103,8 +121,8 @@ void Grenade::TestForImpact()
 		m_bImpacted = true;
 
 		//test for bots within the blast radius and inflict damage
-		InflictDamageOnBotsWithinBlastRadius();
-
+		//InflictDamageOnBotsWithinBlastRadius();
+		m_waitThread = new std::thread(waitThread, 2000, this);
 		m_vPosition = m_vImpactPoint;
 
 		return;
@@ -116,8 +134,8 @@ void Grenade::TestForImpact()
 	if (Vec2DDistanceSq(Pos(), m_vTarget) < tolerance*tolerance)
 	{
 		m_bImpacted = true;
-
-		InflictDamageOnBotsWithinBlastRadius();
+		m_waitThread = new std::thread(waitThread, 2000, this);
+		//InflictDamageOnBotsWithinBlastRadius();
 	}
 }
 
@@ -152,8 +170,8 @@ void Grenade::InflictDamageOnBotsWithinBlastRadius()
 void Grenade::Render()
 {
 
-	gdi->RedPen();
-	gdi->OrangeBrush();
+	gdi->BluePen();
+	gdi->BlueBrush();
 	gdi->Circle(Pos(), 2);
 
 	if (m_bImpacted)

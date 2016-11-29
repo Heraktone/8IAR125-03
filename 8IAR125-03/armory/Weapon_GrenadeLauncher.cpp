@@ -47,7 +47,7 @@ inline void GrenadeLauncher::ShootAt(Vector2D pos)
 	if (NumRoundsRemaining() > 0 && isReadyForNextShot())
 	{
 		//fire a round
-		m_pOwner->GetWorld()->AddRocket(m_pOwner, pos);
+		m_pOwner->GetWorld()->AddGrenade(m_pOwner, pos);
 
 		UpdateTimeWeaponIsNextAvailable();
 
