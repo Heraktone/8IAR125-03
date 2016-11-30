@@ -106,6 +106,9 @@ Raven_Bot::~Raven_Bot()
 
 // Called whenever the agent dies
 void Raven_Bot::DropWeapon() {
+	//Don't drop the blaster since it's the default gun with unlimited ammo
+	if (m_pWeaponSys->GetCurrentWeapon()->GetType() == type_blaster)
+		return;
 	if (m_pWorld->TeamsActivated()) {
 		// Choose a position to drop the current weapon
 		double theta = 2 * RandFloat() * pi;
@@ -115,6 +118,7 @@ void Raven_Bot::DropWeapon() {
 
 		// Drop the current weapon
 		Raven_Weapon* w = m_pWeaponSys->GetCurrentWeapon();
+		debug_con << "Bot " << this->ID() << "dropped a weapon " << w->GetType() << "";
 		m_pWorld->GetMap()->AddDroppedWeaponTrigger(pos, w->GetType(), w->NumRoundsRemaining(), team->GetId(), m_pWorld);
 
 		// Alert the team

@@ -85,6 +85,8 @@ private:
   void AddDoor(std::ifstream& in);
   void AddDoorTrigger(std::ifstream& in);
 
+  int GetClosestNodeToPosition(Vector2D pos) const;
+
   void Clear();
   
 public:
