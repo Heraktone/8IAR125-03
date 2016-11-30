@@ -11,13 +11,14 @@
 #include "Goal_Wander.h"
 #include "Raven_Goal_Types.h"
 #include "Goal_AttackTarget.h"
+#include "../Raven_Bot.h"
+#include "../Raven_Game.h"
 
 
 #include "GetWeaponGoal_Evaluator.h"
 #include "GetHealthGoal_Evaluator.h"
 #include "ExploreGoal_Evaluator.h"
 #include "AttackTargetGoal_Evaluator.h"
-
 
 Goal_Think::Goal_Think(Raven_Bot* pBot):Goal_Composite<Raven_Bot>(pBot, goal_think)
 {
@@ -35,6 +36,17 @@ Goal_Think::Goal_Think(Raven_Bot* pBot):Goal_Composite<Raven_Bot>(pBot, goal_thi
   double KnifeBias = RandInRange(LowRangeOfBias, HighRangeOfBias);
   double ExploreBias = RandInRange(LowRangeOfBias, HighRangeOfBias);
   double AttackBias = RandInRange(LowRangeOfBias, HighRangeOfBias);
+
+  if (pBot->GetWorld()->TeamsActivated())
+  {
+	  HealthBias = pBot->GetTeam()->GetHealthBias();
+	  ShotgunBias = pBot->GetTeam()->GetShotgunBias();
+	  RocketLauncherBias = pBot->GetTeam()->GetRocketLauncherBias();
+	  RailgunBias = pBot->GetTeam()->GetRailgunBias();
+	  KnifeBias = pBot->GetTeam()->GetKnifeBias();
+	  ExploreBias = pBot->GetTeam()->GetExploreBias();
+	  AttackBias = pBot->GetTeam()->GetAttackBias();
+  }
 
   //create the evaluator objects
   m_Evaluators.push_back(new GetHealthGoal_Evaluator(HealthBias));

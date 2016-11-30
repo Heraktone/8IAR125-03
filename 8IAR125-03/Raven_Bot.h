@@ -128,8 +128,8 @@ private:
 
 
 public:
-  
-  Raven_Bot(Raven_Game* world, Vector2D pos);
+
+  Raven_Bot(Raven_Game* world, Vector2D pos, Raven_Team* team);
   virtual ~Raven_Bot();
 
   // Added methods for team handling

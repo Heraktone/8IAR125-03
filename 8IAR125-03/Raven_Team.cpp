@@ -2,10 +2,40 @@
 #include "misc/Cgdi.h"
 
 
-Raven_Team::Raven_Team(int id, Raven_Game* world) :
+Raven_Team::Raven_Team(int id, Raven_Game* world, int behaviour) :
 	m_Id(id),
 	m_pWorld(world)
 {
+	if (behaviour == Normal)
+	{
+		HealthBias = 1;
+		ShotgunBias = 1;
+		RocketLauncherBias = 1;
+		RailgunBias = 1;
+		KnifeBias = 1;
+		ExploreBias = 1;
+		AttackBias = 1;
+	}
+	else if (behaviour == Reckless)
+	{
+		HealthBias = 0;
+		ShotgunBias = 0;
+		RocketLauncherBias = 0;
+		RailgunBias = 0;
+		KnifeBias = 0;
+		ExploreBias = 1;
+		AttackBias = 2;
+	}
+	else if (behaviour == Careful)
+	{
+		HealthBias = 2;
+		ShotgunBias = 1;
+		RocketLauncherBias = 1;
+		RailgunBias = 1;
+		KnifeBias = 1;
+		ExploreBias = 1;
+		AttackBias = 0.5;
+	}
 }
 
 void Raven_Team::Update() {
@@ -14,12 +44,10 @@ void Raven_Team::Update() {
 
 void Raven_Team::AddMember(Raven_Bot* bot) {
 	m_Bots.push_back(bot);
-	bot->SetTeam(this);
 }
 
 void Raven_Team::RemoveMember(Raven_Bot* bot) {
 	m_Bots.remove(bot);
-	bot->SetTeam(0);
 }
 
 void Raven_Team::AddDroppedWeapon(Vector2D pos) {
