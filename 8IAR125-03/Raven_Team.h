@@ -47,6 +47,8 @@ public:
 	int GetId() const { return m_Id; }
 	Raven_Game* GetWorld() const { return m_pWorld; }
 
+	std::list<int> GetMembersID();
+
 	void Update();
 
 	static void PenColor(int id);

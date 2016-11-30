@@ -2,6 +2,7 @@
 #include "Raven_Bot.h"
 #include "Raven_SensoryMemory.h"
 #include "Raven_Game.h"
+#include "../Common/Game/EntityManager.h"
 
 
 
@@ -18,12 +19,17 @@ Raven_TargetingSystem::Raven_TargetingSystem(Raven_Bot* owner):m_pOwner(owner),
 //-----------------------------------------------------------------------------
 void Raven_TargetingSystem::Update()
 {
-  double ClosestDistSoFar = MaxDouble;
+ // double ClosestDistSoFar = MaxDouble;
+	double lowCost = MaxDouble;
   m_pCurrentTarget       = 0;
+  double coeff = 100;
+
+  
 
   //grab a list of all the opponents the owner can sense
   std::list<Raven_Bot*> SensedBots;
   SensedBots = m_pOwner->GetSensoryMem()->GetListOfRecentlySensedOpponents();
+
   
   std::list<Raven_Bot*>::const_iterator curBot = SensedBots.begin();
   for (curBot; curBot != SensedBots.end(); ++curBot)
@@ -33,11 +39,27 @@ void Raven_TargetingSystem::Update()
     {
 		if (!(*curBot)->GetWorld()->TeamsActivated() || (*curBot)->GetTeam() != m_pOwner->GetTeam())
 		{
-			double dist = Vec2DDistanceSq((*curBot)->Pos(), m_pOwner->Pos());
 
-			if (dist < ClosestDistSoFar)
+			double dist = Vec2DDistanceSq((*curBot)->Pos(), m_pOwner->Pos());
+			// compute a bonus if the enemy is aldready attacked 
+			double bonus = 0;
+			std::list<int> alliesIDs = this->m_pOwner->GetTeam()->GetMembersID();
+			std::list<int>::iterator nextAlly = alliesIDs.begin();
+			for (nextAlly; nextAlly != alliesIDs.end(); ++nextAlly) {
+				if (*nextAlly != this->m_pOwner->ID()) {
+					Raven_Bot* curAlly = (Raven_Bot*)EntityManager::Instance()->GetEntityFromID(*nextAlly);
+					if (curAlly->ID() == (*curBot)->ID()) {
+						bonus -= 1 / dist * 1/(*curBot)->Health() * coeff;
+					}
+					
+				}
+			}
+
+			
+
+			if ((dist + bonus) < lowCost)
 			{
-				ClosestDistSoFar = dist;
+				lowCost = dist + bonus;
 				m_pCurrentTarget = *curBot;
 			}
 		}
