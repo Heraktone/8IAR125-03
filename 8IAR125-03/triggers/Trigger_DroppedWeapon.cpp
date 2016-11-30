@@ -9,6 +9,7 @@
 #include "../armory/Weapon_ShotGun.h"
 #include "../armory/Weapon_Blaster.h"
 #include "../armory/Weapon_Knife.h"
+#include "../armory/Weapon_GrenadeLauncher.h"
 
 
 #include "Debug/DebugConsole.h"
@@ -78,6 +79,12 @@ void Trigger_DroppedWeapon::Try(Raven_Bot* bot) {
 				case type_rocket_launcher:
 
 					w = new RocketLauncher(bot); break;
+
+				case type_grenade_launcher:
+					
+					w = new GrenadeLauncher(bot); break;
+					
+			}
 
 			}//end switch
 
