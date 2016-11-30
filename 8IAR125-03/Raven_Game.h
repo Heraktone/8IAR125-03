@@ -48,6 +48,7 @@ private:
   // a list of all the teams in the map
   std::list<Raven_Team*>		m_Teams;
   bool teamActive;
+  bool teamFlocking;
 
   //the user may select a bot to control manually. This is a pointer to that
   //bot
@@ -92,7 +93,9 @@ public:
   ~Raven_Game();
 
   void ActivateTeams(bool activate);
+  void ActivateTeamFlocking(bool flocking);
   bool TeamsActivated() { return teamActive; }
+  bool TeamFlockingActivated() { return teamFlocking; }
 
   //the usual suspects
   void Render();
