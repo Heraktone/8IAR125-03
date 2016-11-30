@@ -792,6 +792,7 @@ Raven_Game::GetPosOfClosestSwitch(Vector2D botPos, unsigned int doorID)const
 }
 
 void Raven_Game::ActivateTeamFlocking(bool flocking) {
+	teamFlocking = flocking;
 	if (flocking)
 	{
 		std::list<Raven_Bot*>::const_iterator it = m_Bots.begin();
