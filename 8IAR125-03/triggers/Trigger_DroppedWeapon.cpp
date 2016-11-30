@@ -83,8 +83,6 @@ void Trigger_DroppedWeapon::Try(Raven_Bot* bot) {
 				case type_grenade_launcher:
 					
 					w = new GrenadeLauncher(bot); break;
-					
-			}
 
 			}//end switch
 
