@@ -16,6 +16,8 @@
     <ClCompile Include="armory\Projectile_Rocket.cpp" />
     <ClCompile Include="armory\Projectile_Slug.cpp" />
     <ClCompile Include="armory\Raven_Projectile.cpp" />
+	<ClCompile Include="armory\Weapon_GrenadeLauncher.cpp"/>
+    <ClCompile Include="armory\Projectile_Grenade.cpp"/>
     <ClCompile Include="..\Common\Game\BaseGameEntity.cpp" />
     <ClCompile Include="lua\Raven_Scriptor.cpp" />
     <ClCompile Include="..\Common\Game\EntityManager.cpp" />
@@ -186,6 +188,8 @@
     <ClInclude Include="..\Common\2D\WallIntersectionTests.h" />
     <ClInclude Include="..\Common\misc\WindowUtils.h" />
     <ClInclude Include="armory\Weapon_Knife.h" />
+	<ClInclude Include="armory\Weapon_GrenadeLauncher.h"/>
+    <ClInclude Include="armory\Projectile_Grenade.h"/>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Script1.rc" />

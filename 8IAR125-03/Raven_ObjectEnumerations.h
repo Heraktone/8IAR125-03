@@ -19,6 +19,7 @@ enum
   type_obstacle,
   type_sliding_door,
   type_door_trigger,
+  type_grenade_launcher,
   type_knife
 };
 
