@@ -180,8 +180,10 @@ LRESULT CALLBACK WindowProc (HWND   hwnd,
 		 case 'T':
 			 g_pRaven->ActivateTeams(!g_pRaven->TeamsActivated());
 			 break;
-           
 
+		 case 'F':
+			 g_pRaven->ActivateTeamFlocking(!g_pRaven->TeamFlockingActivated());
+			 break;
         }
       }
 

@@ -791,6 +791,26 @@ Raven_Game::GetPosOfClosestSwitch(Vector2D botPos, unsigned int doorID)const
   return closest;
 }
 
+void Raven_Game::ActivateTeamFlocking(bool flocking) {
+	if (flocking)
+	{
+		std::list<Raven_Bot*>::const_iterator it = m_Bots.begin();
+		for (it; it != m_Bots.end(); ++it)
+		{
+			(*it)->GetSteering()->CohesionOn();
+			(*it)->GetSteering()->AlignmentOn();
+		}
+	}
+	else {
+		std::list<Raven_Bot*>::const_iterator it = m_Bots.begin();
+		for (it; it != m_Bots.end(); ++it)
+		{
+			(*it)->GetSteering()->CohesionOff();
+			(*it)->GetSteering()->AlignmentOff();
+		}
+	}
+}
+
 
 
 
