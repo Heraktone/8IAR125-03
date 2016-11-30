@@ -37,12 +37,15 @@ void Raven_TargetingSystem::Update()
     //make sure the bot is alive and that it is neither the owner nor a team member
     if ((*curBot)->isAlive() && (*curBot != m_pOwner))
     {
+		double bonus = 0;
+
+		double dist = Vec2DDistanceSq((*curBot)->Pos(), m_pOwner->Pos());
+
 		if (!(*curBot)->GetWorld()->TeamsActivated() || (*curBot)->GetTeam() != m_pOwner->GetTeam())
 		{
 
-			double dist = Vec2DDistanceSq((*curBot)->Pos(), m_pOwner->Pos());
 			// compute a bonus if the enemy is aldready attacked 
-			double bonus = 0;
+			
 			std::list<int> alliesIDs = this->m_pOwner->GetTeam()->GetMembersID();
 			std::list<int>::iterator nextAlly = alliesIDs.begin();
 			for (nextAlly; nextAlly != alliesIDs.end(); ++nextAlly) {
@@ -54,9 +57,7 @@ void Raven_TargetingSystem::Update()
 					
 				}
 			}
-
 			
-
 			if ((dist + bonus) < lowCost)
 			{
 				lowCost = dist + bonus;

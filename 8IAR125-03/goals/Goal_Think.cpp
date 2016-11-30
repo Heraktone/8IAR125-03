@@ -239,7 +239,7 @@ bool Goal_Think::HandleMessage(const Telegram& msg) {
 		return true;
 
 	default:
-		return false;
+		return ForwardMessageToFrontMostSubgoal(msg);
 		break;
 	}
 

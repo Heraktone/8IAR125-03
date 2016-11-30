@@ -25,16 +25,21 @@ double HelpGoal_Evaluator::CalculateDesirability(Raven_Bot* pBot)
 	Goal_Think* brain = pBot->GetBrain();
 
 	if (brain->DoesSomeoneNeedHelp()){
-		Raven_Bot* toHelp = (Raven_Bot*)EntityManager::Instance()->GetEntityFromID(brain->toHelp());
-		bool pasSoi = (brain->toHelp() != pBot->ID());
-		if (pasSoi && (toHelp->GetTargetSys()->isTargetPresent()) && !(toHelp->isDead()))
-		{
-			//int id = brain->toHelp();
-			//Raven_Bot* toHelp = (Raven_Bot*)EntityManager::Instance()->GetEntityFromID(id);
-			//if ((pBot->GetWorld()->isSecondVisibleToFirst(pBot,toHelp)) && (pBot->Health() >= 50)) {
-			if (pBot->Health() >= 50) {
-				Desirability = 1.0;
+		try {
+			Raven_Bot* toHelp = (Raven_Bot*)EntityManager::Instance()->GetEntityFromID(brain->toHelp());
+			bool pasSoi = (brain->toHelp() != pBot->ID());
+			if (pasSoi && (toHelp->GetTargetSys()->isTargetPresent()) && !(toHelp->isDead()))
+			{
+				//int id = brain->toHelp();
+				//Raven_Bot* toHelp = (Raven_Bot*)EntityManager::Instance()->GetEntityFromID(id);
+				//if ((pBot->GetWorld()->isSecondVisibleToFirst(pBot,toHelp)) && (pBot->Health() >= 50)) {
+				if (pBot->Health() >= 50) {
+					Desirability = 1.0;
+				}
 			}
+		}
+		catch (int i) {
+
 		}
 	}
 

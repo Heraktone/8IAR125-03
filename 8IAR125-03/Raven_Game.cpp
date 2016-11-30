@@ -231,6 +231,10 @@ void Raven_Game::Update()
       Raven_Bot* pBot = m_Bots.back();
       if (pBot == m_pSelectedBot)m_pSelectedBot=0;
       NotifyAllBotsOfRemoval(pBot);
+	  if (teamActive)
+	  {
+		  pBot->GetTeam()->RemoveMember(pBot);
+	  }
       delete m_Bots.back();
       m_Bots.remove(pBot);
       pBot = 0;
