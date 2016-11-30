@@ -30,6 +30,16 @@ void Raven_Team::RemoveDroppedWeapon(Vector2D pos) {
 	m_DroppedWeapons.remove(pos);
 }
 
+std::list<int> Raven_Team::GetMembersID() {
+
+	std::list<int> ids;
+	std::list<Raven_Bot*>::iterator curBot = this->m_Bots.begin();
+	for (curBot; curBot != m_Bots.end(); ++curBot) {
+		ids.push_back((*curBot)->ID());
+	}
+	return ids;
+}
+
 void Raven_Team::PenColor(int id) {
 	switch (id) {
 	case Raven_Team::Red:

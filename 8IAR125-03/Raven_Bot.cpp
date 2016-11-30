@@ -356,6 +356,35 @@ void Raven_Bot::ReduceHealth(unsigned int val)
   if (m_iHealth <= 0)
   {
     SetDead();
+
+	// send messages to all allies, help is no more requested
+	std::list<int> ids = this->GetTeam()->GetMembersID();
+	std::list<int>::iterator nextID = ids.begin();
+	for (nextID; nextID != ids.end(); ++nextID) {
+		Dispatcher->DispatchMsg(SEND_MSG_IMMEDIATELY,
+			ID(),
+			*nextID,
+			Msg_DeadOrSafe,
+			NO_ADDITIONAL_INFO);
+	}
+  }
+  else
+  {
+	  if (m_iHealth <= 25) {
+		  // send messages to all allies, help is requested
+		  std::list<int> ids = this->GetTeam()->GetMembersID();
+		  std::list<int>::iterator nextID = ids.begin();
+		  for (nextID; nextID != ids.end(); ++nextID) {
+			  if (*nextID != ID()) {
+				  Dispatcher->DispatchMsg(SEND_MSG_IMMEDIATELY,
+					  ID(),
+					  *nextID,
+					  Msg_LowHealth,
+					  NO_ADDITIONAL_INFO);
+			  }
+		  }
+	  }
+  
   }
 
   m_bHit = true;
@@ -601,5 +630,19 @@ void Raven_Bot::RestoreHealthToMaximum(){m_iHealth = m_iMaxHealth;}
 void Raven_Bot::IncreaseHealth(unsigned int val)
 {
   m_iHealth+=val; 
+  // send messages to all allies, help is no more requested
+  std::list<int> ids = this->GetTeam()->GetMembersID();
+  std::list<int>::iterator nextID = ids.begin();
+
+  if (val >= 25) {
+	  for (nextID; nextID != ids.end(); ++nextID) {
+		  Dispatcher->DispatchMsg(SEND_MSG_IMMEDIATELY,
+			  ID(),
+			  *nextID,
+			  Msg_DeadOrSafe,
+			  NO_ADDITIONAL_INFO);
+	  }
+  }
+
   Clamp(m_iHealth, 0, m_iMaxHealth);
 }

@@ -17,6 +17,7 @@
 #include "GetHealthGoal_Evaluator.h"
 #include "ExploreGoal_Evaluator.h"
 #include "AttackTargetGoal_Evaluator.h"
+#include "HelpGoal_Evaluator.h"
 
 
 Goal_Think::Goal_Think(Raven_Bot* pBot):Goal_Composite<Raven_Bot>(pBot, goal_think)
@@ -35,6 +36,9 @@ Goal_Think::Goal_Think(Raven_Bot* pBot):Goal_Composite<Raven_Bot>(pBot, goal_thi
   double ExploreBias = RandInRange(LowRangeOfBias, HighRangeOfBias);
   double AttackBias = RandInRange(LowRangeOfBias, HighRangeOfBias);
 
+  // unused
+  double HelpBias = RandInRange(LowRangeOfBias, HighRangeOfBias);
+
   //create the evaluator objects
   m_Evaluators.push_back(new GetHealthGoal_Evaluator(HealthBias));
   m_Evaluators.push_back(new ExploreGoal_Evaluator(ExploreBias));
@@ -45,6 +49,8 @@ Goal_Think::Goal_Think(Raven_Bot* pBot):Goal_Composite<Raven_Bot>(pBot, goal_thi
                                                      type_knife));
   m_Evaluators.push_back(new GetWeaponGoal_Evaluator(RocketLauncherBias,
                                                      type_rocket_launcher));
+
+  m_Evaluators.push_back(new HelpGoal_Evaluator(HelpBias));
 }
 
 //----------------------------- dtor ------------------------------------------
@@ -198,6 +204,29 @@ void Goal_Think::Render()
   {
     (*curG)->Render();
   }
+}
+
+
+bool Goal_Think::HandleMessage(const Telegram& msg) { 
+
+	switch (msg.Msg)
+	{
+	case Msg_LowHealth :
+		this->idEndangeredAlly = msg.Sender;
+		this->someoneNeedsHelp = true;
+		return true;
+
+	case Msg_DeadOrSafe :
+		if (msg.Sender == idEndangeredAlly) {
+			this->someoneNeedsHelp = false;
+		}
+		return true;
+
+	default:
+		return false;
+		break;
+	}
+
 }
 
 

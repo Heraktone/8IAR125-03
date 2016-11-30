@@ -18,6 +18,12 @@
 #include "Goal_Evaluator.h"
 
 
+#include "Messaging/Telegram.h"
+#include "../Raven_Messages.h"
+#include "Messaging/MessageDispatcher.h"
+#include "../Raven_Game.h"
+
+
 
 class Goal_Think : public Goal_Composite<Raven_Bot>
 {
@@ -28,6 +34,9 @@ private:
 private:
   
   GoalEvaluators  m_Evaluators;
+
+  bool someoneNeedsHelp = false;
+  int idEndangeredAlly = -1;
 
 public:
 
@@ -58,6 +67,13 @@ public:
   //this renders the evaluations (goal scores) at the specified location
   void  RenderEvaluations(int left, int top)const;
   void  Render();
+
+
+  bool HandleMessage(const Telegram& msg);
+
+  bool DoesSomeoneNeedHelp() { return  (this->m_pOwner->GetWorld()->TeamsActivated()) && (this->someoneNeedsHelp); }
+
+  int toHelp() { return this->idEndangeredAlly; }
 
 
 };
