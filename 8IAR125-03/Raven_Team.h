@@ -8,7 +8,9 @@ class Raven_Team
 {
 public:
 	enum { Blue, Red, Green, Yellow, Black }; // Available team colors
+	enum Behaviour {Normal, Reckless, Careful};
 	static const int MAX_TEAMS = 5;
+	static const int NB_BEHAVIOURS = 3;
 
 private:
 	std::list<Raven_Bot*> m_Bots;	// The bots in the team
@@ -16,8 +18,24 @@ private:
 	int m_Id;					// The team id
 	Raven_Game* m_pWorld;		// The game world
 
+	double HealthBias;
+	double ShotgunBias;
+	double RocketLauncherBias;
+	double RailgunBias;
+	double KnifeBias;
+	double ExploreBias;
+	double AttackBias;
+
 public:
-	Raven_Team(int id, Raven_Game* world);
+	Raven_Team(int id, Raven_Game* world, int behaviour);
+
+	double GetHealthBias() { return HealthBias; }
+	double GetShotgunBias() { return ShotgunBias; }
+	double GetRocketLauncherBias() { return RocketLauncherBias; }
+	double GetRailgunBias() { return RailgunBias; }
+	double GetKnifeBias() { return KnifeBias; }
+	double GetExploreBias() { return ExploreBias; }
+	double GetAttackBias() { return AttackBias; }
 
 	void AddMember(Raven_Bot* bot);
 	void RemoveMember(Raven_Bot* bot);

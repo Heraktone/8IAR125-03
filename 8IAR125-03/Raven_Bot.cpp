@@ -24,18 +24,17 @@
 #include "Debug/DebugConsole.h"
 
 //-------------------------- ctor ---------------------------------------------
-Raven_Bot::Raven_Bot(Raven_Game* world,Vector2D pos):
+Raven_Bot::Raven_Bot(Raven_Game* world, Vector2D pos, Raven_Team* team) :
 
-  MovingEntity(pos,
-               script->GetDouble("Bot_Scale"),
-               Vector2D(0,0),
-               script->GetDouble("Bot_MaxSpeed"),
-               Vector2D(1,0),
-               script->GetDouble("Bot_Mass"),
-               Vector2D(script->GetDouble("Bot_Scale"),script->GetDouble("Bot_Scale")),
-               script->GetDouble("Bot_MaxHeadTurnRate"),
-               script->GetDouble("Bot_MaxForce")),
-                 
+		MovingEntity(pos,
+			script->GetDouble("Bot_Scale"),
+			Vector2D(0, 0),
+			script->GetDouble("Bot_MaxSpeed"),
+			Vector2D(1, 0),
+			script->GetDouble("Bot_Mass"),
+			Vector2D(script->GetDouble("Bot_Scale"), script->GetDouble("Bot_Scale")),
+			script->GetDouble("Bot_MaxHeadTurnRate"),
+			script->GetDouble("Bot_MaxForce")),
                  m_iMaxHealth(script->GetInt("Bot_MaxHealth")),
                  m_iHealth(script->GetInt("Bot_MaxHealth")),
                  m_pPathPlanner(NULL),
@@ -48,7 +47,7 @@ Raven_Bot::Raven_Bot(Raven_Game* world,Vector2D pos):
                  m_Status(spawning),
                  m_bPossessed(false),
                  m_dFieldOfView(DegsToRads(script->GetDouble("Bot_FOV"))),
-				team(0)
+				team(team)
            
 {
   SetEntityType(type_bot);

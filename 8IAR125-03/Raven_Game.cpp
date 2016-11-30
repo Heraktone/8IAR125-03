@@ -323,18 +323,10 @@ void Raven_Game::AddBots(unsigned int NumBotsToAdd)
 { 
 	while (NumBotsToAdd--)
 	{
-		//create a bot. (its position is irrelevant at this point because it will
-		//not be rendered until it is spawned)
-		Raven_Bot* rb = new Raven_Bot(this, Vector2D());
-
-		//switch the default steering behaviors on
-		rb->GetSteering()->WallAvoidanceOn();
-		rb->GetSteering()->SeparationOn();
-
+		Raven_Team* team = 0;
 		if (teamActive) {
 			//Choose the team of the bot
 			int minNbMembers = -1;
-			Raven_Team* team = 0;
 			std::list<Raven_Team*>::const_iterator curTeam = m_Teams.begin();
 			for (curTeam; curTeam != m_Teams.end(); curTeam++)
 			{
@@ -345,8 +337,16 @@ void Raven_Game::AddBots(unsigned int NumBotsToAdd)
 					team = t;
 				}
 			}
-			team->AddMember(rb);
 		}
+
+		//create a bot. (its position is irrelevant at this point because it will
+		//not be rendered until it is spawned)
+		Raven_Bot* rb = new Raven_Bot(this, Vector2D(), team);
+		team->AddMember(rb);
+
+		//switch the default steering behaviors on
+		rb->GetSteering()->WallAvoidanceOn();
+		rb->GetSteering()->SeparationOn();
 		m_Bots.push_back(rb);
 
 		//register the bot with the entity manager
@@ -502,7 +502,7 @@ bool Raven_Game::LoadMap(const std::string& filename)
 
 	// Create the teams
 	for (int t = 0; t < nbTeams; t++) {
-		m_Teams.push_back(new Raven_Team(t, this));
+		m_Teams.push_back(new Raven_Team(t, this, t % Raven_Team::NB_BEHAVIOURS));
 	}
 
     AddBots(script->GetInt("NumBots"));
