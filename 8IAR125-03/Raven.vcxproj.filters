@@ -1,74 +1,82 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="main.cpp" />
-    <ClCompile Include="armory\Projectile_Knifes.cpp" />
-    <ClCompile Include="Raven_Bot.cpp" />
-    <ClCompile Include="Raven_Game.cpp" />
-    <ClCompile Include="Raven_Map.cpp" />
-    <ClCompile Include="armory\Raven_Weapon.cpp" />
-    <ClCompile Include="armory\Weapon_Blaster.cpp" />
-    <ClCompile Include="armory\Weapon_RailGun.cpp" />
-    <ClCompile Include="armory\Weapon_RocketLauncher.cpp" />
-    <ClCompile Include="armory\Weapon_ShotGun.cpp" />
-    <ClCompile Include="armory\Projectile_Bolt.cpp" />
-    <ClCompile Include="armory\Projectile_Pellet.cpp" />
-    <ClCompile Include="armory\Projectile_Rocket.cpp" />
-    <ClCompile Include="armory\Projectile_Slug.cpp" />
-    <ClCompile Include="armory\Raven_Projectile.cpp" />
-    <ClCompile Include="..\Common\Game\BaseGameEntity.cpp" />
-    <ClCompile Include="lua\Raven_Scriptor.cpp" />
-    <ClCompile Include="..\Common\Game\EntityManager.cpp" />
-    <ClCompile Include="GraveMarkers.cpp" />
-    <ClCompile Include="Raven_Door.cpp" />
-    <ClCompile Include="Raven_Team.cpp" />
-    <ClCompile Include="Raven_UserOptions.cpp" />
-    <ClCompile Include="goals\Raven_Goal_Types.cpp" />
-    <ClCompile Include="goals\Goal_AdjustRange.cpp" />
-    <ClCompile Include="goals\Goal_AttackTarget.cpp" />
-    <ClCompile Include="goals\Goal_Explore.cpp" />
-    <ClCompile Include="goals\Goal_FollowPath.cpp" />
-    <ClCompile Include="goals\Goal_GetItem.cpp" />
-    <ClCompile Include="goals\Goal_HuntTarget.cpp" />
-    <ClCompile Include="goals\Goal_MoveToPosition.cpp" />
-    <ClCompile Include="goals\Goal_NegotiateDoor.cpp" />
-    <ClCompile Include="goals\Goal_Think.cpp" />
-    <ClCompile Include="goals\AttackTargetGoal_Evaluator.cpp" />
-    <ClCompile Include="goals\ExploreGoal_Evaluator.cpp" />
-    <ClCompile Include="goals\GetHealthGoal_Evaluator.cpp" />
-    <ClCompile Include="goals\GetWeaponGoal_Evaluator.cpp" />
-    <ClCompile Include="goals\Raven_Feature.cpp" />
-    <ClCompile Include="goals\Goal_DodgeSideToSide.cpp" />
-    <ClCompile Include="goals\Goal_SayPhrase.cpp" />
-    <ClCompile Include="goals\Goal_SeekToPosition.cpp" />
-    <ClCompile Include="goals\Goal_TraverseEdge.cpp" />
-    <ClCompile Include="goals\Goal_Wander.cpp" />
-    <ClCompile Include="..\Common\fuzzy\FuzzyModule.cpp" />
-    <ClCompile Include="..\Common\fuzzy\FuzzyOperators.cpp" />
-    <ClCompile Include="..\Common\fuzzy\FuzzyVariable.cpp" />
-    <ClCompile Include="..\Common\fuzzy\FuzzySet_LeftShoulder.cpp" />
-    <ClCompile Include="..\Common\fuzzy\FuzzySet_RightShoulder.cpp" />
-    <ClCompile Include="..\Common\fuzzy\FuzzySet_Singleton.cpp" />
-    <ClCompile Include="..\Common\fuzzy\FuzzySet_Triangle.cpp" />
-    <ClCompile Include="navigation\Raven_PathPlanner.cpp" />
-    <ClCompile Include="Raven_SteeringBehaviors.cpp" />
-    <ClCompile Include="..\Common\Messaging\MessageDispatcher.cpp" />
-    <ClCompile Include="Raven_SensoryMemory.cpp" />
-    <ClCompile Include="triggers\Trigger_DroppedWeapon.cpp" />
-    <ClCompile Include="triggers\Trigger_HealthGiver.cpp" />
-    <ClCompile Include="triggers\Trigger_SoundNotify.cpp" />
-    <ClCompile Include="triggers\Trigger_WeaponGiver.cpp" />
-    <ClCompile Include="Raven_WeaponSystem.cpp" />
-    <ClCompile Include="Raven_TargetingSystem.cpp" />
-    <ClCompile Include="..\Common\misc\Cgdi.cpp" />
-    <ClCompile Include="..\Common\Time\CrudeTimer.cpp" />
-    <ClCompile Include="..\Common\Debug\DebugConsole.cpp" />
-    <ClCompile Include="..\Common\misc\FrameCounter.cpp" />
-    <ClCompile Include="..\Common\Time\PrecisionTimer.cpp" />
-    <ClCompile Include="..\Common\2D\Vector2d.cpp" />
-    <ClCompile Include="..\Common\misc\WindowUtils.cpp" />
-    <ClCompile Include="armory\Weapon_Knife.cpp" />
-    <ClCompile Include="goals\HelpGoal_Evaluator.cpp" />
+    <Filter Include="Game">
+      <UniqueIdentifier>{5afad2b9-498e-4439-9128-375f7fe152b0}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;rc;def;r;odl;idl;hpj;bat</Extensions>
+    </Filter>
+    <Filter Include="Game\weapons &amp; projectiles">
+      <UniqueIdentifier>{f8e2454e-0aff-4086-b008-27d18960a5ae}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\weapons &amp; projectiles\weapons">
+      <UniqueIdentifier>{22f06348-dc4b-4263-a5c0-a23b95ae39a7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\weapons &amp; projectiles\projectiles">
+      <UniqueIdentifier>{fe63c6c2-a8f9-425f-898c-40a7f7b85e83}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\Base entity classes">
+      <UniqueIdentifier>{98088908-5992-4a0f-a889-715c207b7589}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\Script related">
+      <UniqueIdentifier>{9d7b066b-6c49-4255-be55-476e8c0b6fdb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\Script related\general">
+      <UniqueIdentifier>{6ed6d6d2-b76e-4852-a496-33ada85a0557}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\Script related\lua headers">
+      <UniqueIdentifier>{7a7cdb20-9c53-48f6-b5f5-3da6359bcbc1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\misc">
+      <UniqueIdentifier>{ce3a2a8a-9260-492f-81ad-1c276291884d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{dee236fe-e435-493e-98ba-3e69d8b817f6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\maps">
+      <UniqueIdentifier>{f8dc09bb-f563-4eb1-9c61-ef784a3b864b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="AI">
+      <UniqueIdentifier>{64293b41-0c31-468f-95f4-6c7b42f3b6c1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="AI\goals">
+      <UniqueIdentifier>{cba189c7-cf4f-4700-845a-e9a49f46d560}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="AI\goals\composite">
+      <UniqueIdentifier>{220ba402-39ef-45f7-a966-18043685cad0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="AI\goals\goal evaluation">
+      <UniqueIdentifier>{89d69d3f-2c3c-487c-a08b-65218c24ade5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="AI\goals\atomic">
+      <UniqueIdentifier>{cbb82169-9c76-4c52-a854-fac37df3738f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="AI\fuzzy logic">
+      <UniqueIdentifier>{8617fe2c-63df-44b9-94e7-0c6b683b7f6c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="AI\fuzzy logic\fuzzy set types">
+      <UniqueIdentifier>{5498c68a-91a1-4c33-a69a-5a74fe4c71a5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="AI\Movement &amp; Navigation">
+      <UniqueIdentifier>{fa7146e7-4d15-4661-878e-4d5b43c51e5f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="AI\Messaging">
+      <UniqueIdentifier>{39179b36-0944-4aae-9447-b67aa05bdedb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="AI\Sensory Memory">
+      <UniqueIdentifier>{d933299d-da7a-481e-8e2a-193fe04fb1a9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="AI\Triggers">
+      <UniqueIdentifier>{7127bcd3-ca8e-487c-b561-dc7983867e31}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="AI\Weapon Handling">
+      <UniqueIdentifier>{aa836393-90bb-470b-93ea-1ee73f23ede9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="AI\Target Selection">
+      <UniqueIdentifier>{0ba96256-f21a-46a5-ad61-252d454a867a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common">
+      <UniqueIdentifier>{f3f5ab42-49d8-4348-aa63-66655abd9be1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -266,17 +274,20 @@
     <ClCompile Include="triggers\Trigger_DroppedWeapon.cpp">
       <Filter>AI\Triggers</Filter>
     </ClCompile>
-    <ClCompile Include="armory\Projectile_Knifes.cpp">
-      <Filter>Game</Filter>
-    </ClCompile>
-    <ClCompile Include="armory\Weapon_Knife.cpp">
-      <Filter>Game</Filter>
+    <ClCompile Include="goals\HelpGoal_Evaluator.cpp">
+      <Filter>AI\goals\goal evaluation</Filter>
     </ClCompile>
     <ClCompile Include="armory\Projectile_Grenade.cpp">
-      <Filter>Game</Filter>
+      <Filter>Game\weapons &amp; projectiles\projectiles</Filter>
+    </ClCompile>
+    <ClCompile Include="armory\Projectile_Knifes.cpp">
+      <Filter>Game\weapons &amp; projectiles\projectiles</Filter>
     </ClCompile>
     <ClCompile Include="armory\Weapon_GrenadeLauncher.cpp">
-      <Filter>Game</Filter>
+      <Filter>Game\weapons &amp; projectiles\weapons</Filter>
+    </ClCompile>
+    <ClCompile Include="armory\Weapon_Knife.cpp">
+      <Filter>Game\weapons &amp; projectiles\weapons</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -628,6 +639,9 @@
     <ClInclude Include="armory\Weapon_Knife.h">
       <Filter>Game\weapons &amp; projectiles\weapons</Filter>
     </ClInclude>
+    <ClInclude Include="goals\HelpGoal_Evaluator.h">
+      <Filter>AI\goals\goal evaluation</Filter>
+    </ClInclude>
     <ClInclude Include="armory\Projectile_Grenade.h">
       <Filter>Game\weapons &amp; projectiles\projectiles</Filter>
     </ClInclude>
@@ -636,9 +650,22 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Params.lua" />
-    <None Include="note.txt" />
-    <None Include="maps\Raven_DM1.map" />
-    <None Include="maps\Raven_DM1_Doors.map" />
+    <None Include="Params.lua">
+      <Filter>Game\Script related</Filter>
+    </None>
+    <None Include="note.txt">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="maps\Raven_DM1.map">
+      <Filter>Resource Files\maps</Filter>
+    </None>
+    <None Include="maps\Raven_DM1_Doors.map">
+      <Filter>Resource Files\maps</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Script1.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
   </ItemGroup>
 </Project>
